@@ -1,0 +1,44 @@
+{
+  "name": "cycle-component",
+  "version": "1.0.0",
+  "description": "A nice greeter",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm test && pnpm run lint",
+    "preversion": "pnpm run lint",
+    "version": "pnpm run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuunnx/cycle-custom-element.git"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "keywords": [
+    "Hello",
+    "Greeter"
+  ],
+  "author": "C-J",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fuunnx/cycle-custom-element/issues"
+  },
+  "homepage": "https://github.com/fuunnx/cycle-custom-element#readme",
+  "devDependencies": {
+    "@types/jest": "^24.0.17",
+    "jest": "^24.8.0",
+    "prettier": "^1.18.2",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.5.3"
+  }
+}
