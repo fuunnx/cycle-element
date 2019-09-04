@@ -1,7 +1,7 @@
 {
-  "name": "cycle-component",
-  "version": "1.0.0",
-  "description": "A nice greeter",
+  "name": "@fuunnx/cycle-custom-element",
+  "version": "0.0.0",
+  "description": "Embed your cycle.js app anywhere by turning it into a custom element",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -26,7 +26,7 @@
     "Hello",
     "Greeter"
   ],
-  "author": "C-J",
+  "author": "Géraud Henrion",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/fuunnx/cycle-custom-element/issues"
