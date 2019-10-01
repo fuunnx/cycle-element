@@ -1,11 +1,11 @@
 import { canvas, DOMSource, h1, input } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
-import { customElementify, RequiredSources } from '../src'
+import { ComponentSources, customElementify } from '../src'
 
 window.customElements.define(
   'hello-world',
   customElementify(
-    function CycleComponent(sources: RequiredSources) {
+    function CycleComponent(sources: ComponentSources) {
       const { props } = sources
 
       return {
@@ -19,7 +19,7 @@ window.customElements.define(
 window.customElements.define(
   'input-text',
   customElementify(
-    function CycleComponent(sources: RequiredSources) {
+    function CycleComponent(sources: ComponentSources) {
       const { props, DOM } = sources
 
       const $input = DOM.select('input')
@@ -58,7 +58,7 @@ interface CanvasShape {
 window.customElements.define(
   'hello-canvas',
   customElementify(
-    function CycleComponent(sources: RequiredSources) {
+    function CycleComponent(sources: ComponentSources) {
       const { DOM, props } = sources
 
       return {

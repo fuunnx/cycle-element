@@ -1,43 +1,34 @@
-import { DOMSource, MainDOMSource, makeDOMDriver, VNode } from '@cycle/dom'
-import { Driver, Drivers, setup } from '@cycle/run'
+import { DOMSource, makeDOMDriver, VNode } from '@cycle/dom'
+import { Drivers, setup } from '@cycle/run'
 import Element, { Props } from '@skatejs/element/dist/esm'
 import vnode from 'snabbdom/vnode'
-import xs, { Listener, MemoryStream, Stream } from 'xstream'
+import xs, { Listener, MemoryStream, Stream, Subscription } from 'xstream'
 import dropRepeats from 'xstream/extra/dropRepeats'
 
-type callback = (props: Props) => void
+interface Dict<T = any> {
+  [opt: string]: T
+}
 
-interface BaseCycleComponentOptions {
+type StreamDict = Dict<Stream<any>>
+
+interface CycleComponentOptions {
   shadowRootOptions?: ShadowRootInit
   props?: Props
-  drivers?: DriversFactory
+  drivers?: (element: HTMLElement) => Drivers
 }
 
-export type DriversFactory = (element: HTMLElement) => Drivers
-
-export interface RequiredSinks {
-  DOM: Stream<any>
-  [name: string]: Stream<any>
+export interface ComponentSinks {
+  DOM?: Stream<any>
 }
 
-export interface RequiredSources {
+export interface ComponentSources {
   DOM: DOMSource
   props: PropsSource
-  [name: string]: any
 }
 
-export type Component = (sources: RequiredSources) => RequiredSinks
-
-export interface DefaultDrivers_ {
-  props: Driver<Stream<Props>, PropsSource>
-  DOM: Driver<Stream<VNode>, MainDOMSource>
-}
-
-export type DefaultDrivers<D> = D & DefaultDrivers_
-
-type WithPropUpdate = Element & {
-  onPropUpdate: (callback: callback) => { unsubscribe: () => void }
-}
+export type Component = (
+  sources: ComponentSources & Dict,
+) => ComponentSinks & StreamDict
 
 interface PropsSource {
   get: {
@@ -47,179 +38,183 @@ interface PropsSource {
   dispose: () => void
 }
 
-interface AnyOptions {
-  [opt: string]: any
-}
-
-// export function customElementify<
-//   D extends MatchingDrivers<D, M>,
-//   M extends MatchingMain<D, M>
-// >(main: M, options: CycleComponentOptions<D>): typeof Element;
-
 export function customElementify(main: Component): typeof Element
+
 export function customElementify(
   main: Component,
-  options: BaseCycleComponentOptions,
+  options: CycleComponentOptions,
 ): typeof Element
-export function customElementify(
-  main: Component,
-  options: AnyOptions = {},
-): typeof Element {
+
+export function customElementify(main: Component, options: Dict = {}) {
   const props = options.props || {}
   const shadowRootOptions =
-    'shadowRootOptions' in options ? options.shadowRootOptions : null
-  let extraDrivers = options.drivers || (() => ({}))
+    'shadowRootOptions' in options ? options.shadowRootOptions : undefined
+  const extraDrivers = options.drivers || (() => ({}))
 
-  return class CycleComponent extends Element {
+  return class extends CycleComponent {
+    get drivers() {
+      return {
+        ...extraDrivers(this),
+      }
+    }
     public static props = props
     public static shadowRootOptions = shadowRootOptions
+    public static main = main
+  }
+}
 
-    private _propsListener: Listener<Props> = {
-      next() {},
-      error() {},
-      complete() {},
-    }
+export class CycleComponent extends Element {
+  get drivers() {
+    return {}
+  }
+  public static props = {}
+  public static shadowRootOptions = undefined
+  public static main: Component = () => ({})
 
-    public connectedCallback() {
-      super.connectedCallback()
+  private _propsSourcesListener: Listener<Props> = {
+    next() {},
+    error() {},
+    complete() {},
+  }
+  private _subscriptions: Dict<Subscription> = {}
 
-      if (typeof extraDrivers === 'function') {
-        extraDrivers = extraDrivers(this)
+  public connectedCallback() {
+    super.connectedCallback()
+    const main = (this.constructor as any).main
+    const allDrivers = { ...this.mandatoryDrivers(), ...this.drivers }
+    const { sinks, run } = setup(main, allDrivers)
+    const $element = this as CycleComponent & Dict
+
+    Object.entries(sinks).forEach(([key, value$]) => {
+      if (key in allDrivers) {
+        return
       }
 
-      const allDrivers = {
-        ...this.mandatoryDrivers(),
-        ...extraDrivers,
-      }
-      const { sinks, run } = setup(main as any, allDrivers)
-      Object.entries(sinks).forEach(([key, value$]) => {
-        if (key in allDrivers) {
-          return
-        }
-        if (key.endsWith('$')) {
-          ;(this as any)[key] = value$ as Stream<any>
-        } else {
-          ;(value$ as Stream<any>).subscribe({
-            next: value => {
-              this.dispatchEvent(new CustomEvent(key, { detail: value }))
-            },
-          })
-        }
-      })
-
-      const dispose = run()
-      this._cleanup = () => {
-        dispose()
-      }
-    }
-
-    public disconnectedCallback() {
-      super.disconnectedCallback()
-      this._cleanup()
-    }
-
-    public updated(props: Props) {
-      super.updated(props)
-      const newProps = Object.keys(props).reduce(
-        (acc, key) => {
-          if (acc[key] !== (this as any)[key]) {
-            acc[key] = (this as any)[key]
-          }
-          return acc
-        },
-        {} as { [k: string]: any },
-      )
-      this._propsListener.next(newProps)
-    }
-
-    public renderer() {
-      // do nothing
-    }
-
-    private mandatoryDrivers() {
-      const $element = this
-      return {
-        props: $element.makePropsDriver(),
-        DOM: (vtree$: Stream<VNode>) => {
-          const root = $element.renderRoot as HTMLElement
-
-          return makeDOMDriver(root)(
-            vtree$
-              .map(newVTree => {
-                return vnode(
-                  'root',
-                  {},
-                  Array.isArray(newVTree) ? newVTree : [newVTree],
-                  undefined,
-                  root,
-                )
-              })
-              .startWith(vnode('root', {}, [], undefined, root)),
-          )
-        },
-      }
-    }
-
-    private makePropsDriver() {
-      const $element = this
-      const props = $element.constructor.props || {}
-      Object.keys(props).forEach(key => {
-        ;($element as any)[key + '$'] = xs.createWithMemory()
-      })
-
-      return function propsDriver(setProp$: Stream<Props>): PropsSource {
-        const subscription = setProp$.subscribe({
-          next: (newProps: { [key: string]: any }) => {
-            Object.entries(newProps).forEach(([key, value]) => {
-              if (key in ($element.constructor.props || {})) {
-                if (($element as any)[key] !== value) {
-                  ;($element as any)[key] = value
-                  ;($element as any)[key + '$'].shamefullySendNext(value)
-                }
-              }
-            })
-          },
-          error: (error: Error | string) => {
-            throw error
+      if (key.endsWith('$')) {
+        $element[key] = value$ as Stream<any>
+      } else {
+        this._subscriptions[key] = (value$ as Stream<any>).subscribe({
+          next: value => {
+            this.dispatchEvent(new CustomEvent(key, { detail: value }))
           },
         })
+      }
+    })
 
-        let elSubscription: { unsubscribe: () => void } | undefined
-        const props$: Stream<Props> = xs
-          .createWithMemory({
-            start(listener) {
-              $element._propsListener = listener
-              listener.next(($element as any)._props)
-            },
-            stop() {
-              elSubscription && elSubscription.unsubscribe()
-            },
-          })
-          .fold(
-            (acc: Props, x) => ({ ...acc, ...(x as Props) } as Props),
-            {} as Props,
-          )
+    const dispose = run()
+    this._cleanup = () => {
+      dispose()
+      Object.values(this._subscriptions).forEach(sub => {
+        sub.unsubscribe()
+      })
+    }
+  }
 
-        return {
-          get(propName?: string) {
-            if (!propName) {
-              return props$.compose(dropRepeats()) as MemoryStream<Props>
-            }
+  public disconnectedCallback() {
+    super.disconnectedCallback()
+    this._cleanup()
+  }
 
-            return props$
-              .filter(props => propName in props)
-              .map(props => props[propName])
-              .startWith(($element as any)[propName])
-              .compose(dropRepeats())
-              .remember() as MemoryStream<any>
-          },
-          dispose: () => {
-            subscription.unsubscribe()
-          },
+  public updated(props: Props) {
+    super.updated(props)
+    const $element = this as CycleComponent & Dict
+    const newProps = Object.keys(props).reduce(
+      (acc, key) => {
+        if (acc[key] !== $element[key]) {
+          acc[key] = $element[key]
         }
+        return acc
+      },
+      {} as Props,
+    )
+    this._propsSourcesListener.next(newProps)
+  }
+
+  public renderer() {
+    // do nothing
+  }
+
+  private _cleanup = () => {}
+
+  private mandatoryDrivers() {
+    return {
+      props: this.makePropsDriver(),
+      DOM: (vtree$: Stream<VNode>) => {
+        const renderRoot = this.renderRoot as HTMLElement
+
+        return makeDOMDriver(renderRoot)(
+          vtree$
+            .map(newVTree => {
+              return Array.isArray(newVTree)
+                ? vnode('root', {}, newVTree, undefined, renderRoot)
+                : newVTree
+            })
+            .startWith(vnode('root', {}, [], undefined, renderRoot)),
+        )
+      },
+    }
+  }
+
+  private makePropsDriver() {
+    const $element = this as (CycleComponent & Dict)
+    const props = this.constructor.props || {}
+    const propsSinksListeners: Dict<Listener<any> | undefined> = {}
+
+    Object.keys(props).forEach(key => {
+      $element[key + '$'] = xs.createWithMemory({
+        start(listener) {
+          propsSinksListeners[key] = listener
+        },
+        stop() {
+          propsSinksListeners[key] = undefined
+        },
+      })
+    })
+
+    return function propsDriver(propsSink$: Stream<Props>): PropsSource {
+      const subscription = propsSink$.subscribe({
+        next: (newProps: Props) => {
+          Object.entries(newProps).forEach(([key, value]) => {
+            if (key in props && $element[key] !== value) {
+              if (propsSinksListeners[key]) {
+                ;(propsSinksListeners[key] as Listener<any>).next(value)
+              }
+              $element[key] = value
+            }
+          })
+        },
+        error: (error: Error | string) => {
+          throw error
+        },
+      })
+
+      const propsSource$: Stream<Props> = xs
+        .createWithMemory({
+          start(listener) {
+            $element._propsSourcesListener = listener
+            listener.next(($element as any)._props)
+          },
+          stop() {},
+        })
+        .fold((acc: Props, x) => ({ ...acc, ...x } as Props), {} as Props)
+
+      return {
+        get(propName?: string) {
+          if (!propName) {
+            return propsSource$.compose(dropRepeats()) as MemoryStream<Props>
+          }
+
+          return propsSource$
+            .filter(props => propName in props)
+            .map(props => props[propName])
+            .startWith(($element as any)[propName])
+            .compose(dropRepeats())
+            .remember() as MemoryStream<any>
+        },
+        dispose: () => {
+          subscription.unsubscribe()
+        },
       }
     }
-
-    private _cleanup = () => {}
   }
 }
