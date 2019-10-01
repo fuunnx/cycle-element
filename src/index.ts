@@ -12,7 +12,7 @@ interface Dict<T = any> {
 type StreamDict = Dict<Stream<any>>
 
 interface CycleComponentOptions {
-  shadowRootOptions?: ShadowRootInit
+  shadowRootInit?: ShadowRootInit | boolean
   props?: Props
   drivers?: (element: HTMLElement) => Drivers
 }
@@ -47,8 +47,11 @@ export function customElementify(
 
 export function customElementify(main: Component, options: Dict = {}) {
   const props = options.props || {}
-  const shadowRootOptions =
-    'shadowRootOptions' in options ? options.shadowRootOptions : undefined
+  let shadowRootOptions = options.shadowRootInit
+  if (typeof shadowRootOptions !== 'object') {
+    shadowRootOptions = shadowRootOptions ? { mode: 'open' } : undefined
+  }
+
   const extraDrivers = options.drivers || (() => ({}))
 
   return class extends CycleComponent {
@@ -143,13 +146,19 @@ export class CycleComponent extends Element {
         const renderRoot = this.renderRoot as HTMLElement
 
         return makeDOMDriver(renderRoot)(
-          vtree$
-            .map(newVTree => {
-              return Array.isArray(newVTree)
-                ? vnode('root', {}, newVTree, undefined, renderRoot)
-                : newVTree
-            })
-            .startWith(vnode('root', {}, [], undefined, renderRoot)),
+          vtree$.map(newVTree => {
+            if (newVTree.sel !== 'root') {
+              newVTree = vnode(
+                'root',
+                {},
+                Array.isArray(newVTree) ? newVTree : [newVTree],
+                undefined,
+                renderRoot,
+              )
+            }
+
+            return newVTree
+          }),
         )
       },
     }
