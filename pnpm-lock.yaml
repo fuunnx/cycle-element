@@ -2,7 +2,6 @@ dependencies:
   '@cycle/dom': 22.4.0
   '@cycle/run': 5.3.0
   '@skatejs/element': 0.0.1
-  '@skatejs/element-snabbdom': 0.0.1_snabbdom@0.7.3
   snabbdom: 0.7.3
   xstream: 11.11.0
 devDependencies:
@@ -328,19 +327,6 @@ packages:
       node: '>= 6'
     resolution:
       integrity: sha512-XKK7ze1apu5JWQ5eZjHITP66AX+QsLlbaJRBGYr8pNzwcAE2JVkwnf0yqjHTsDRcjR0mujy/NmZMXw5kl+kGBw==
-  /@skatejs/element-snabbdom/0.0.1_snabbdom@0.7.3:
-    dependencies:
-      '@skatejs/element': 0.0.0
-      snabbdom: 0.7.3
-    dev: false
-    peerDependencies:
-      snabbdom: ^0.7.1
-    resolution:
-      integrity: sha512-1ByVpuo3u14rEZaY+ogmM1z/u6X5sO0iQ55304xQM5jP35YJLJ/Eyl8xkWoDyURhXjcwNSvnT2NrZZJdwdPWng==
-  /@skatejs/element/0.0.0:
-    dev: false
-    resolution:
-      integrity: sha512-bZFtJ/W3HuC3p15coRBbdyXI2/qEO6TyiBSepGWrGChKSxSvq9POfTolHjYDo/pNK9ENZbUXifgYCbnwvVrCfg==
   /@skatejs/element/0.0.1:
     dev: false
     resolution:
@@ -5602,7 +5588,6 @@ specifiers:
   '@cycle/dom': ^22.3.0
   '@cycle/run': ^5.2.0
   '@skatejs/element': 0.0.1
-  '@skatejs/element-snabbdom': 0.0.1
   '@types/jest': ^24.0.17
   budo: ^11.6.3
   jest: ^24.8.0
