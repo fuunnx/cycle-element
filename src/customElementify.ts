@@ -6,22 +6,18 @@ export function customElementify(
   options?: CycleComponentOptions,
 ): typeof Element
 export function customElementify(main: Component, options: Dict = {}) {
-  const props = options.props || {}
-  let shadowRootOptions = options.shadowRootInit
-  if (typeof shadowRootOptions !== 'object') {
-    shadowRootOptions = shadowRootOptions ? { mode: 'open' } : undefined
-  }
+  let { props = {}, shadowRootInit, drivers = () => ({}) } = options
 
-  const extraDrivers = options.drivers || (() => ({}))
+  if (typeof shadowRootInit !== 'object') {
+    shadowRootInit = shadowRootInit ? { mode: 'open' } : undefined
+  }
 
   return class extends CycleComponent {
     get drivers() {
-      return {
-        ...extraDrivers(this),
-      }
+      return drivers(this)
     }
     public static props = props
-    public static shadowRootOptions = shadowRootOptions
+    public static shadowRootOptions = shadowRootInit
     public static main = main
   }
 }
