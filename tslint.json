@@ -1,6 +1,27 @@
 {
-    "extends": [
-        "tslint:recommended",
-        "tslint-config-prettier"
-    ]
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "rules": {
+    "interface-name": [true, "never-prefix"],
+    "object-literal-sort-keys": [
+      true,
+      "ignore-blank-lines",
+      "match-declaration-order-only",
+      "shorthand-first"
+    ],
+    "no-empty": [true, "allow-empty-catch", "allow-empty-functions"],
+    "prefer-const": [
+      true,
+      {
+        "destructuring": "all"
+      }
+    ],
+    "variable-name": {
+      "options": [
+        "ban-keywords",
+        "check-format",
+        "allow-leading-underscore",
+        "allow-pascal-case"
+      ]
+    }
+  }
 }
