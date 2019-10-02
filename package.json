@@ -14,7 +14,8 @@
     "prepublishOnly": "pnpm test && pnpm run lint",
     "preversion": "pnpm run lint",
     "version": "pnpm run format && git add -A src",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "postinstall": "patch-package"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
     "@types/jest": "^24.0.17",
     "budo": "^11.6.3",
     "jest": "^24.8.0",
+    "patch-package": "^6.2.0",
     "prettier": "^1.18.2",
     "ts-jest": "^24.0.2",
     "tsify": "^4.0.1",
@@ -48,6 +50,8 @@
     "@cycle/dom": "^22.3.0",
     "@cycle/run": "^5.2.0",
     "@skatejs/element": "0.0.1",
-    "@skatejs/element-snabbdom": "0.0.1"
+    "@skatejs/element-snabbdom": "0.0.1",
+    "snabbdom": "^0.7.3",
+    "xstream": "^11.11.0"
   }
 }
