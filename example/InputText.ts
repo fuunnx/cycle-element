@@ -11,11 +11,9 @@ export const InputText = customElementify(
       eName: string,
     ) => Stream<Event>).bind($input)
 
-    const props$ = events('input')
-      .map(event => ({
-        value: (event.target as HTMLInputElement).value,
-      }))
-      .debug('set props')
+    const props$ = events('input').map(event => ({
+      value: (event.target as HTMLInputElement).value,
+    }))
 
     const focus$ = events('focus')
 
