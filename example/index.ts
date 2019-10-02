@@ -4,7 +4,6 @@ window.customElements.define('hello-world', HelloWorld)
 import { InputText } from './InputText'
 window.customElements.define('input-text', InputText)
 
-import xs from 'xstream'
 import { HelloCanvas } from './HelloCanvas'
 window.customElements.define('hello-canvas', HelloCanvas)
 

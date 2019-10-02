@@ -1,5 +1,5 @@
 import { h, input } from '@cycle/dom'
-import xs, { Stream } from 'xstream'
+import { Stream } from 'xstream'
 import { customElementify } from '../src'
 
 export const InputText = customElementify(
