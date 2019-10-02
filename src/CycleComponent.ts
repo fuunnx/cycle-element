@@ -1,10 +1,13 @@
 import { makeDOMDriver, VNode } from '@cycle/dom'
 import { setup } from '@cycle/run'
+import { timeDriver } from '@cycle/time'
 import Element, { Props } from '@skatejs/element/dist/esm'
 import vnode from 'snabbdom/vnode'
 import xs, { Listener, MemoryStream, Stream, Subscription } from 'xstream'
 import dropRepeats from 'xstream/extra/dropRepeats'
 import { Component, Dict, PropsSource } from './types'
+
+const Time = timeDriver(xs.empty())
 
 const noopListener = {
   next() {},
@@ -139,9 +142,14 @@ export class CycleComponent extends Element {
 
       Object.defineProperty($element, key + '$', {
         get() {
-          return propsSource.get(key)
+          return xs
+            .merge(
+              source$.compose(Time.delay(0)), // there is a weird glitch on ordering
+              propsSource.get(key),
+            )
+            .remember()
         },
-        set(value$) {
+        set(value$: Stream<any>) {
           if (value$ === source$) {
             return
           }
@@ -150,10 +158,7 @@ export class CycleComponent extends Element {
           source$ = value$
           subscription = source$.subscribe({
             next(val) {
-              // :(
-              Promise.resolve(null).then(() => {
-                $element[key] = val
-              })
+              $element[key] = val
             },
           })
         },

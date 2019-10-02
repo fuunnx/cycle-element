@@ -20,8 +20,8 @@ export const HelloCanvas = customElementify(
             content: [
               {
                 type: 'rectangle',
-                x: (x / 100) * w,
-                y: (y / 100) * h,
+                x: (Math.min(100 - width, x) / 100) * w,
+                y: (Math.min(100 - height, y) / 100) * h,
                 width: (width / 100) * w,
                 height: (height / 100) * h,
                 color,
@@ -36,8 +36,8 @@ export const HelloCanvas = customElementify(
       color: String,
       x: Number,
       y: Number,
-      width: { ...props.number, default: () => 100 },
-      height: { ...props.number, default: () => 100 },
+      width: { ...props.number, default: () => 50 },
+      height: { ...props.number, default: () => 50 },
     },
     drivers: () => ({
       canvas: makeCanvasDriver(),

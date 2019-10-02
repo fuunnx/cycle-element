@@ -49,6 +49,7 @@
   "dependencies": {
     "@cycle/dom": "^22.3.0",
     "@cycle/run": "^5.2.0",
+    "@cycle/time": "^0.20.0",
     "@skatejs/element": "0.0.1",
     "snabbdom": "^0.7.3",
     "xstream": "^11.11.0"

@@ -13,6 +13,7 @@
   }
 
   aside > * {
+    display: block;
     margin-top: 30px;
     min-width: 200px;
   }
@@ -21,13 +22,14 @@
 <hello-world></hello-world>
 
 <aside>
-  <input-text value="red"></input-text>
+  <input-text label="Color" name="color"></input-text>
+  <input-text label="roloC" name="color_reversed"></input-text>
 
   <input-range label="X" name="xRange" value="10"></input-range>
   <input-range label="Y" name="yRange" value="10"></input-range>
 
-  <input-range label="Width" name="widthRange" value="100"></input-range>
-  <input-range label="Height" name="heightRange" value="100"></input-range>
+  <input-range label="Width" name="widthRange" value="50"></input-range>
+  <input-range label="Height" name="heightRange" value="50"></input-range>
 </aside>
 
 <hello-canvas></hello-canvas>

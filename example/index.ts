@@ -10,7 +10,10 @@ window.customElements.define('hello-canvas', HelloCanvas)
 import { InputRange } from './InputRange'
 window.customElements.define('input-range', InputRange)
 
-const inputElement = document.querySelector('input-text') as any
+const colorInput = document.querySelector('[name="color"]') as any
+const colorReversedInput = document.querySelector(
+  '[name="color_reversed"]',
+) as any
 const canvasElement = document.querySelector('hello-canvas') as any
 const helloElement = document.querySelector('hello-world') as any
 const xRange = document.querySelector('[name="xRange"]') as any
@@ -18,21 +21,31 @@ const yRange = document.querySelector('[name="yRange"]') as any
 const widthRange = document.querySelector('[name="widthRange"]') as any
 const heightRange = document.querySelector('[name="heightRange"]') as any
 
-inputElement.value$ = inputElement.value$.map((val: string) => {
+const color$ = colorInput.value$.map((val: string) => {
   if (val === 'red') {
     return 'NOPE IT\'s blue'
   }
   return val
 })
 
-helloElement.name$ = inputElement.value$.map((x: string) =>
+colorReversedInput.value$ = color$.map(reverse)
+colorInput.value$ = colorReversedInput.value$.map(reverse)
+
+helloElement.name$ = colorInput.value$.map((x: string) =>
   x
     .split('')
     .reverse()
     .join(''),
 )
 
-canvasElement.color$ = inputElement.value$.map(
+function reverse(str: string) {
+  return str
+    .split('')
+    .reverse()
+    .join('')
+}
+
+canvasElement.color$ = colorInput.value$.map(
   (x: string) => x.split(' ').reverse()[0] || '',
 )
 canvasElement.x$ = xRange.value$
