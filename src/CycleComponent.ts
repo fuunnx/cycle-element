@@ -60,18 +60,10 @@ export class CycleComponent extends Element {
     this._cleanup()
   }
 
-  public updated(props: Props) {
-    super.updated(props)
+  public updated(oldProps: Props) {
+    super.updated(oldProps)
     const $element = this as CycleComponent & Dict
-    const newProps = Object.keys(props).reduce(
-      (acc, key) => {
-        if (acc[key] !== $element[key]) {
-          acc[key] = $element[key]
-        }
-        return acc
-      },
-      {} as Props,
-    )
+    const newProps = getAllProps(Object.keys(oldProps), $element)
     this._propsSourcesListener.next(newProps)
   }
 
@@ -109,15 +101,61 @@ export class CycleComponent extends Element {
   private _makePropsDriver() {
     const $element = this as (CycleComponent & Dict)
     const props = this.constructor.props || {}
-    const propsSinksListeners: Dict<Listener<any> | undefined> = {}
+    const propsNames = Object.keys(props)
 
-    Object.keys(props).forEach(key => {
-      $element[key + '$'] = xs.createWithMemory({
+    const initialProps = getAllProps(propsNames, $element)
+    const propsSource$: Stream<Props> = xs
+      .createWithMemory({
         start(listener) {
-          propsSinksListeners[key] = listener
+          $element._propsSourcesListener = listener
+          listener.next(getAllProps(propsNames, $element))
         },
         stop() {
-          propsSinksListeners[key] = undefined
+          //
+        },
+      })
+      .fold((acc: Props, x) => ({ ...acc, ...x } as Props), initialProps)
+
+    const propsSource = {
+      get(propName?: string) {
+        if (!propName) {
+          return propsSource$
+            .startWith(getAllProps(propsNames, $element))
+            .compose(dropRepeats()) as MemoryStream<Props>
+        }
+
+        return propsSource$
+          .filter(currProps => propName in currProps)
+          .map(currProps => currProps[propName])
+          .startWith($element[propName])
+          .compose(dropRepeats())
+          .remember() as MemoryStream<any>
+      },
+    }
+
+    propsNames.forEach(key => {
+      let source$ = xs.never()
+      let subscription = source$.subscribe({})
+
+      Object.defineProperty($element, key + '$', {
+        get() {
+          return propsSource.get(key)
+        },
+        set(value$) {
+          if (value$ === source$) {
+            return
+          }
+
+          subscription.unsubscribe()
+          source$ = value$
+          subscription = source$.subscribe({
+            next(val) {
+              // :(
+              Promise.resolve(null).then(() => {
+                $element[key] = val
+              })
+            },
+          })
         },
       })
     })
@@ -126,11 +164,7 @@ export class CycleComponent extends Element {
       const subscription = propsSink$.subscribe({
         next: (newProps: Props) => {
           Object.entries(newProps).forEach(([key, value]) => {
-            if (key in props && $element[key] !== value) {
-              const listener = propsSinksListeners[key]
-              if (listener) {
-                listener.next(value)
-              }
+            if (key in props) {
               $element[key] = value
             }
           })
@@ -140,35 +174,21 @@ export class CycleComponent extends Element {
         },
       })
 
-      const propsSource$: Stream<Props> = xs
-        .createWithMemory({
-          start(listener) {
-            $element._propsSourcesListener = listener
-            listener.next(($element as any)._props)
-          },
-          stop() {
-            //
-          },
-        })
-        .fold((acc: Props, x) => ({ ...acc, ...x } as Props), {} as Props)
-
-      return {
-        get(propName?: string) {
-          if (!propName) {
-            return propsSource$.compose(dropRepeats()) as MemoryStream<Props>
-          }
-
-          return propsSource$
-            .filter(currProps => propName in currProps)
-            .map(currProps => currProps[propName])
-            .startWith($element[propName])
-            .compose(dropRepeats())
-            .remember() as MemoryStream<any>
-        },
-        dispose: () => {
+      return Object.assign(propsSource, {
+        dispose() {
           subscription.unsubscribe()
         },
-      }
+      })
     }
   }
+}
+
+function getAllProps(propsNames: string[], $element: Dict) {
+  return propsNames.reduce(
+    (acc, propName) => {
+      acc[propName] = $element[propName]
+      return acc
+    },
+    {} as Props,
+  )
 }

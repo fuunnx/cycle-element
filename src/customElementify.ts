@@ -19,5 +19,5 @@ export function customElementify(main: Component, options: Dict = {}) {
     public static props = props
     public static shadowRootOptions = shadowRootInit
     public static main = main
-  }
+  } as (typeof CycleComponent & Dict)
 }

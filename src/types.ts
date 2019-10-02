@@ -10,9 +10,9 @@ export interface Dict<T = any> {
 export type StreamDict = Dict<Stream<any>>
 
 export interface CycleComponentOptions {
-  shadowRootInit?: ShadowRootInit | boolean
   props?: Props
   drivers?: (element: HTMLElement) => Drivers
+  shadowRootInit?: ShadowRootInit | boolean
 }
 
 export interface ComponentSinks {
