@@ -1,4 +1,4 @@
-import { h, input } from '@cycle/dom'
+import { h, input, label } from '@cycle/dom'
 import { Stream } from 'xstream'
 import { customElementify } from '../src'
 
@@ -22,12 +22,13 @@ export const InputText = customElementify(
       props: props$,
       DOM: props
         .get()
-        .map(({ value = '' }) =>
+        .map(({ value = '', label: labelString }) =>
           h('root', { class: { valid: value.length >= 3 } }, [
+            labelString && label(labelString),
             input({ props: { value, type: 'text' } }),
           ]),
         ),
     }
   },
-  { props: { value: String } },
+  { props: { value: String, label: String } },
 )

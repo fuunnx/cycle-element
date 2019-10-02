@@ -13,15 +13,17 @@ export const HelloCanvas = customElementify(
         .combine(DOM.select('canvas').element(), propsSource.get())
         .map(([element, properties]) => {
           const { color, x, y, width, height } = properties
+          const w = element.width
+          const h = element.height
           return {
             target: element,
             content: [
               {
                 type: 'rectangle',
-                x1: x,
-                x2: x + width,
-                y1: y,
-                y2: y + height,
+                x: (x / 100) * w,
+                y: (y / 100) * h,
+                width: (width / 100) * w,
+                height: (height / 100) * h,
                 color,
               },
             ],
@@ -45,20 +47,23 @@ export const HelloCanvas = customElementify(
 
 interface CanvasShape {
   type: 'retangle'
-  x1: number
-  y1: number
-  x2: number
-  y2: number
+  x: number
+  y: number
+  width: number
+  height: number
   color: string
 }
 function makeCanvasDriver() {
   return function canvasDriver($instructions: Stream<any>) {
     const sub = $instructions.subscribe({
       next(instructions) {
-        const ctx = instructions.target.getContext('2d')
+        const { target } = instructions
+        const ctx = target.getContext('2d')
+        ctx.clearRect(0, 0, target.width, target.height)
+
         instructions.content.forEach((content: CanvasShape) => {
           ctx.fillStyle = content.color
-          ctx.fillRect(content.x1, content.y1, content.x2, content.y2)
+          ctx.fillRect(content.x, content.y, content.width, content.height)
         })
       },
     })

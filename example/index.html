@@ -1,10 +1,36 @@
 <!DOCTYPE html>
 
-<hello-world name="World"></hello-world>
+<style>
+  body > * {
+    display: block;
+    margin: 30px;
+  }
 
-<input-text></input-text>
+  aside {
+    position: fixed;
+    top: 0;
+    right: 0;
+  }
 
-<hello-canvas color="red"></hello-canvas>
+  aside > * {
+    margin-top: 30px;
+    min-width: 200px;
+  }
+</style>
+
+<hello-world></hello-world>
+
+<aside>
+  <input-text value="red"></input-text>
+
+  <input-range label="X" name="xRange" value="10"></input-range>
+  <input-range label="Y" name="yRange" value="10"></input-range>
+
+  <input-range label="Width" name="widthRange" value="100"></input-range>
+  <input-range label="Height" name="heightRange" value="100"></input-range>
+</aside>
+
+<hello-canvas></hello-canvas>
 
 <script src="https://unpkg.com/@webcomponents/custom-elements@1.3.0/src/native-shim.js"></script>
 <script src="./index.js"></script>
