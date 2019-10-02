@@ -6,6 +6,12 @@ import xs, { Listener, MemoryStream, Stream, Subscription } from 'xstream'
 import dropRepeats from 'xstream/extra/dropRepeats'
 import { Component, Dict, PropsSource } from './types'
 
+const noopListener = {
+  next() {},
+  error() {},
+  complete() {},
+}
+
 export class CycleComponent extends Element {
   get drivers() {
     return {}
@@ -14,11 +20,7 @@ export class CycleComponent extends Element {
   public static shadowRootOptions = undefined
   public static main: Component = () => ({})
 
-  private _propsSourcesListener: Listener<Props> = {
-    next() {},
-    error() {},
-    complete() {},
-  }
+  private _propsSourcesListener: Listener<Props> = noopListener
   private _subscriptions: Dict<Subscription> = {}
 
   public connectedCallback() {
