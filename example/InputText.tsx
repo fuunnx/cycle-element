@@ -1,4 +1,4 @@
-import { h, input, label } from '@cycle/dom'
+import Snabbdom from 'snabbdom-pragma'
 import { Stream } from 'xstream'
 import { customElementify } from '../src'
 
@@ -20,14 +20,12 @@ export const InputText = customElementify(
     return {
       focus$,
       props: props$,
-      DOM: props
-        .get()
-        .map(({ value = '', label: labelString }) =>
-          h('root', { class: { valid: value.length >= 3 } }, [
-            labelString && label(labelString),
-            input({ props: { value, type: 'text' } }),
-          ]),
-        ),
+      DOM: props.get().map(({ value = '', label: labelString }) => (
+        <root class={{ valid: value.length > 0 }}>
+          {labelString && <label>{labelString}</label>}
+          <input type="text" value={value} />
+        </root>
+      )),
     }
   },
   { props: { value: String, label: String } },

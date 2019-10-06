@@ -30,13 +30,7 @@ const color$ = colorInput.value$.map((val: string) => {
 
 colorReversedInput.value$ = color$.map(reverse)
 colorInput.value$ = colorReversedInput.value$.map(reverse)
-
-helloElement.name$ = colorInput.value$.map((x: string) =>
-  x
-    .split('')
-    .reverse()
-    .join(''),
-)
+helloElement.name$ = color$
 
 function reverse(str: string) {
   return str
@@ -45,10 +39,10 @@ function reverse(str: string) {
     .join('')
 }
 
-canvasElement.color$ = colorInput.value$.map(
-  (x: string) => x.split(' ').reverse()[0] || '',
-)
-canvasElement.x$ = xRange.value$
-canvasElement.y$ = yRange.value$
-canvasElement.width$ = widthRange.value$
-canvasElement.height$ = heightRange.value$
+Object.assign(canvasElement, {
+  color$: colorInput.value$.map((x: string) => x.split(' ').reverse()[0] || ''),
+  x$: xRange.value$,
+  y$: yRange.value$,
+  width$: widthRange.value$,
+  height$: heightRange.value$,
+})

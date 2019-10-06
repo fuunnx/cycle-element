@@ -9,6 +9,7 @@
       "shorthand-first"
     ],
     "no-empty": [true, "allow-empty-catch", "allow-empty-functions"],
+    "no-unused-variable": [true, "check-parameters"],
     "prefer-const": [
       true,
       {
