@@ -1,5 +1,5 @@
 import { DOMSource } from '@cycle/dom'
-import { Drivers } from '@cycle/run'
+import { Driver, Drivers } from '@cycle/run'
 import { Props } from '@skatejs/element/dist/esm'
 import { Stream } from 'xstream'
 
@@ -9,11 +9,18 @@ export interface Dict<T = any> {
 
 export type StreamDict = Dict<Stream<any>>
 
+export interface ComponentOptions {
+  props?: Props
+  drivers?: (element: HTMLElement) => Drivers
+}
+
 export interface CycleComponentOptions {
   props?: Props
   drivers?: (element: HTMLElement) => Drivers
   shadowRootInit?: ShadowRootInit | boolean
 }
+
+export type Props = Dict<any>
 
 export interface ComponentSinks {
   DOM?: Stream<any>
@@ -22,6 +29,11 @@ export interface ComponentSinks {
 export interface ComponentSources {
   DOM: DOMSource
   props: PropsSource
+}
+
+export type PropsDriver = Driver<Stream<Dict<any>>, PropsSource>
+export type _PropsDriver = PropsDriver & {
+  next: (x: Dict<any>) => void
 }
 
 export type Component = (
