@@ -36,16 +36,18 @@
   "homepage": "https://github.com/fuunnx/cycle-custom-element#readme",
   "devDependencies": {
     "@types/jest": "^24.0.17",
+    "@types/ramda": "^0.26.33",
     "budo": "^11.6.3",
     "jest": "^24.8.0",
     "patch-package": "^6.2.0",
     "prettier": "^1.18.2",
+    "ramda": "^0.26.1",
     "snabbdom-pragma": "^2.8.0",
     "ts-jest": "^24.0.2",
     "tsify": "^4.0.1",
     "tslint": "^5.18.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.7.2"
   },
   "dependencies": {
     "@cycle/dom": "^22.3.0",

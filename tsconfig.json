@@ -8,6 +8,8 @@
     "jsxFactory": "Snabbdom.createElement",
     "declaration": true,
     "outDir": "./lib",
+    "noImplicitAny": true,
+    "strictNullChecks": true,
     "strict": true
   },
   "include": ["src"],

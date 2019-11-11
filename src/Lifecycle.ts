@@ -4,10 +4,10 @@ import { makePropsDriver } from './propsDriver'
 import { _PropsDriver, Component, Dict, Props } from './types'
 import { makeWrappedDOMDriver } from './wrappedDOMDriver'
 
-export class Lifecycle {
+export class Lifecycle<Props extends Dict = Dict> {
   private elm: HTMLElement & Dict
   private subscriptions: Dict<Subscription> = {}
-  private propsDriver: _PropsDriver
+  private propsDriver: _PropsDriver<Props>
 
   constructor(
     elm: HTMLElement,
@@ -16,7 +16,7 @@ export class Lifecycle {
     props: {},
   ) {
     this.elm = elm
-    this.propsDriver = makePropsDriver(elm, props)
+    this.propsDriver = makePropsDriver<Props>(elm, props as any)
 
     const drivers = {
       props: this.propsDriver as any,

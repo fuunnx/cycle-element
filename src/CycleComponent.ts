@@ -1,15 +1,15 @@
-import Element, { Props } from '@skatejs/element/dist/esm'
+import Element from '@skatejs/element/dist/esm'
 import { Lifecycle } from './lifecycle'
-import { Component } from './types'
+import { Component, Dict } from './types'
 
-export class CycleComponent extends Element {
+export class CycleComponent<Props extends Dict = Dict> extends Element {
   get drivers() {
     return {}
   }
   public static props = {}
   public static shadowRootOptions = undefined
   public static main: Component = () => ({})
-  public lifecycle!: Lifecycle
+  public lifecycle!: Lifecycle<Props>
 
   public connectedCallback() {
     super.connectedCallback()

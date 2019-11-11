@@ -1,6 +1,5 @@
 import { DOMSource } from '@cycle/dom'
 import { Driver, Drivers } from '@cycle/run'
-import { Props } from '@skatejs/element/dist/esm'
 import { Stream } from 'xstream'
 
 export interface Dict<T = any> {
@@ -26,23 +25,26 @@ export interface ComponentSinks {
   DOM?: Stream<any>
 }
 
-export interface ComponentSources {
+export interface ComponentSources<Props extends Dict = Dict> {
   DOM: DOMSource
-  props: PropsSource
+  props: PropsSource<Props>
 }
 
-export type PropsDriver = Driver<Stream<Dict<any>>, PropsSource>
-export type _PropsDriver = PropsDriver & {
-  next: (x: Dict<any>) => void
+export type PropsDriver<Props extends Dict = Dict> = Driver<
+  Stream<Props>,
+  PropsSource
+>
+export type _PropsDriver<Props extends Dict = Dict> = PropsDriver<Props> & {
+  next: (x: Props) => void
 }
 
 export type Component = (
   sources: ComponentSources & Dict,
 ) => ComponentSinks & StreamDict
 
-export interface PropsSource {
+export interface PropsSource<Props extends Dict = Dict> {
   get: {
-    (propName: string): Stream<any>
+    (propName: keyof Props): Stream<any>
     (): Stream<Props>
   }
   dispose: () => void

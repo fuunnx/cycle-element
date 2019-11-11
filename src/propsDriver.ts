@@ -1,7 +1,7 @@
 import { timeDriver } from '@cycle/time'
 import xs, { MemoryStream, Stream } from 'xstream'
 import dropRepeats from 'xstream/extra/dropRepeats'
-import { _PropsDriver, Dict, Props, PropsSource } from './types'
+import { _PropsDriver, Dict, PropsSource } from './types'
 
 const Time = timeDriver(xs.empty())
 
@@ -11,26 +11,32 @@ const noopListener = {
   complete(x: unknown) {},
 }
 
-export function makePropsDriver(elm: HTMLElement, props: Props) {
+export function makePropsDriver<Props extends Dict = Dict>(
+  elm: HTMLElement,
+  props: Dict,
+) {
   const $element = elm as HTMLElement & Dict
   const propsNames = Object.keys(props)
   let propsSourcesListener = noopListener
 
-  const initialProps = getAllProps(propsNames, $element)
-  const propsSource$: Stream<Props> = xs
-    .createWithMemory({
-      start(listener) {
-        propsSourcesListener = listener
-        listener.next(getAllProps(propsNames, $element))
-      },
-      stop() {
-        //
-      },
-    })
-    .fold((acc: Props, x) => ({ ...acc, ...x } as Props), initialProps)
+  const initialProps = getAllProps<Props>(propsNames, $element)
+  const propsSource_$: MemoryStream<Props> = xs.createWithMemory({
+    start(listener) {
+      propsSourcesListener = listener
+      listener.next(getAllProps(propsNames, $element))
+    },
+    stop() {
+      //
+    },
+  })
+
+  const propsSource$ = propsSource_$.fold(
+    (acc, x) => ({ ...acc, ...x }),
+    initialProps,
+  )
 
   const propsSource = {
-    get(propName?: string) {
+    get(propName?: keyof Props) {
       if (!propName) {
         return propsSource$
           .startWith(getAllProps(propsNames, $element))
@@ -40,7 +46,7 @@ export function makePropsDriver(elm: HTMLElement, props: Props) {
       return propsSource$
         .filter(currProps => propName in currProps)
         .map(currProps => currProps[propName])
-        .startWith($element[propName])
+        .startWith(($element as any)[propName])
         .compose(dropRepeats())
         .remember() as MemoryStream<any>
     },
@@ -75,7 +81,9 @@ export function makePropsDriver(elm: HTMLElement, props: Props) {
     })
   })
 
-  function propsDriver(propsSink$: Stream<Props> = xs.never()): PropsSource {
+  function propsDriver(
+    propsSink$: Stream<Props> = xs.never(),
+  ): PropsSource<Props> {
     const subscription = propsSink$.subscribe({
       next: (newProps: Props) => {
         Object.entries(newProps).forEach(([key, value]) => {
@@ -89,11 +97,12 @@ export function makePropsDriver(elm: HTMLElement, props: Props) {
       },
     })
 
-    return Object.assign(propsSource, {
+    return {
+      ...propsSource,
       dispose() {
         subscription.unsubscribe()
       },
-    })
+    }
   }
 
   Object.assign(propsDriver, {
@@ -103,13 +112,16 @@ export function makePropsDriver(elm: HTMLElement, props: Props) {
     },
   })
 
-  return propsDriver as _PropsDriver
+  return (propsDriver as unknown) as _PropsDriver<Props>
 }
 
-function getAllProps(propsNames: string[], $element: Dict) {
+function getAllProps<Props extends Dict = Dict>(
+  propsNames: string[],
+  $element: Dict,
+) {
   return propsNames.reduce(
     (acc, propName) => {
-      acc[propName] = $element[propName]
+      ;(acc as any)[propName] = $element[propName]
       return acc
     },
     {} as Props,

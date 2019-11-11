@@ -10,6 +10,9 @@ window.customElements.define('hello-canvas', HelloCanvas)
 import { InputRange } from './InputRange'
 window.customElements.define('input-range', InputRange)
 
+import { Tesseract } from './Tesseract'
+window.customElements.define('hyper-cube', Tesseract)
+
 const colorInput = document.querySelector('[name="color"]') as any
 const colorReversedInput = document.querySelector(
   '[name="color_reversed"]',
