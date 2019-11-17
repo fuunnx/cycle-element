@@ -1,55 +1,56 @@
-import { canvas } from '@cycle/dom'
-import xs from 'xstream'
-import { customElementify } from '../../src'
-import { makeCanvasDriver } from '../HelloCanvas/canvasDriver'
+import { canvas } from "@cycle/dom";
+import xs from "xstream";
+import { customElementify } from "../../src";
+import { makeCanvasDriver } from "../HelloCanvas/canvasDriver";
 
-import { map } from 'ramda'
-import { hypercubeState } from './hypercube'
-import { Point } from './Shape'
+import { map } from "ramda";
+import { hypercubeState } from "./hypercube";
+import { Point } from "./Shape";
+import { props } from "@skatejs/element/dist/esm";
 
-const WIDTH = 500
+const WIDTH = 500;
 
 export interface Props {
-  rotateX: number
-  rotateY: number
-  rotateZ: number
-  rotateW: number
-  perspectiveZ: number
-  perspectiveW: number
+  rotateX: number;
+  rotateY: number;
+  rotateZ: number;
+  rotateW: number;
+  perspectiveZ: number;
+  perspectiveW: number;
 }
 
 export const Tesseract = customElementify<Props>(
   function CycleComponent(sources) {
-    const { DOM, props: propsSource } = sources
+    const { DOM, props: propsSource } = sources;
 
     return {
       DOM: xs.of(canvas({ attrs: { width: 800, height: 800 } })),
       canvas: xs
-        .combine(DOM.select('canvas').element(), propsSource.get())
+        .combine(DOM.select("canvas").element(), propsSource.get())
         .map(([element, props]) => {
           const lines = hypercubeState(props as Props).lines.map(
             map((point: Point) => {
-              const [x = 1, y = 1] = point
+              const [x = 1, y = 1] = point;
               return {
                 x: (x + 0.5) * WIDTH,
-                y: (y + 0.5) * WIDTH,
-              }
-            }),
-          )
+                y: (y + 0.5) * WIDTH
+              };
+            })
+          );
 
           return {
             target: element,
             content: [
               {
-                type: 'lines',
+                type: "lines",
                 width: 2,
-                color: 'black',
-                lines,
-              },
-            ],
-          }
-        }),
-    }
+                color: "black",
+                lines
+              }
+            ]
+          };
+        })
+    };
   },
   {
     props: {
@@ -57,12 +58,12 @@ export const Tesseract = customElementify<Props>(
       rotateY: Number,
       rotateZ: Number,
       rotateW: Number,
-      perspectiveW: Number,
-      perspectiveZ: Number,
+      perspectiveW: { ...props.number, default: () => 0.5 },
+      perspectiveZ: { ...props.number, default: () => 0.5 }
     },
 
     drivers: () => ({
-      canvas: makeCanvasDriver(),
-    }),
-  },
-)
+      canvas: makeCanvasDriver()
+    })
+  }
+);

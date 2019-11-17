@@ -1,38 +1,39 @@
-import { pipe } from 'ramda'
-import { Props } from './index'
+import { pipe } from "ramda";
+import { Props } from "./index";
 import {
   matrixTransform,
   rotateXMatrix4,
   rotateYMatrix4,
   rotateZMatrix4,
-} from './matrixUtils'
-import { Point, Shape } from './Shape'
+  rotateXYMatrix4
+} from "./matrixUtils";
+import { Point, Shape } from "./Shape";
 
-const { PI } = Math
+const { PI } = Math;
 const hypercube = Shape.hypercube().map(
   matrixTransform(
     rotateZMatrix4(PI / 4),
-    // prettier-ignore
-    [
-      [1, 0, 0, 0], 
-      [0, 1, 0.9, 0], 
-      [0, 0, 1, 0], 
-      [0, 0, 0, 1]
-    ],
-    rotateZMatrix4(PI / 2),
-  ),
-)
+    // // prettier-ignore
+    // [
+    //   [1, 0, 0, 0],
+    //   [0, 1, 0.9, 0],
+    //   [0, 0, 1, 0],
+    //   [0, 0, 0, 1]
+    // ],
+    rotateZMatrix4(PI / 2)
+  )
+);
 
 export function hypercubeState(props: Props) {
-  const to2dPoint = perspective(props.perspectiveZ, props.perspectiveW)
+  const to2dPoint = perspective(props.perspectiveZ, props.perspectiveW);
 
   return hypercube.map(
     pipe(
       rotate(props),
       to2dPoint,
-      recenter,
-    ),
-  )
+      recenter
+    )
+  );
 }
 
 function rotate(axis: Props) {
@@ -40,25 +41,27 @@ function rotate(axis: Props) {
     rotateXMatrix4(axis.rotateX),
     rotateYMatrix4(axis.rotateY),
     rotateZMatrix4(axis.rotateZ),
-  )
+    rotateXYMatrix4(axis.rotateW)
+  );
 }
 
 function perspective(perspectiveZ: number, perspectiveW: number) {
+  console.log(perspectiveZ, perspectiveW);
   return function(point: Point): Point {
-    const [x = 1, y = 1, z = 1, w = 1] = moveCameraBackward(point)
-    const coeff = (-1 * perspectiveZ * z + 1) * (-1 * perspectiveW * w + 1)
-    return [x * coeff, y * coeff]
-  }
+    const [x = 1, y = 1, z = 1, w = 1] = moveCameraBackward(point);
+    const coeff = (-1 * perspectiveZ * z + 1) * (-1 * perspectiveW * w + 1);
+    return [x * coeff, y * coeff];
+  };
 }
 
 function scaleHalf(point: Point): Point {
-  return (point as number[]).map(val => val / 2) as Point
+  return (point as number[]).map(val => val / 2) as Point;
 }
 
 function moveCameraBackward([x = 1, y = 1, z = 1, w = 1]: Point): Point {
-  return scaleHalf([x - 0.5, y, z + 1, w + 1])
+  return scaleHalf([x - 0.5, y, z + 1, w + 1]);
 }
 
 function recenter([x = 1, y = 1]: Point): Point {
-  return [x * 0.522 + 0.025, y * 0.522]
+  return [x * 0.522 + 0.025, y * 0.522];
 }
