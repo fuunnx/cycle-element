@@ -23,6 +23,8 @@ export function snabbdomElementify(
 						drivers,
 						propsTypes || props,
 					)
+
+					props?.hooks?.insert?.(vnode)
 				},
 				update(vnode: VNode) {
 					const elm = vnode.elm as HTMLElement & Dict
@@ -30,12 +32,16 @@ export function snabbdomElementify(
 					if (elm!.lifecycle) {
 						elm.lifecycle.update({ ...props, children })
 					}
+
+					props?.hooks?.update?.(vnode)
 				},
 				destroy(vnode: VNode) {
 					const elm = vnode.elm as HTMLElement & Dict
 					if (elm!.lifecycle) {
 						elm.lifecycle.remove()
 					}
+
+					props?.hooks?.destroy?.(vnode)
 				},
 			},
 		})

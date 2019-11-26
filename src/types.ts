@@ -1,4 +1,4 @@
-import { DOMSource } from '@cycle/dom'
+import { MainDOMSource } from '@cycle/dom'
 import { Driver, Drivers } from '@cycle/run'
 import { Stream } from 'xstream'
 
@@ -26,7 +26,7 @@ export interface ComponentSinks {
 }
 
 export interface ComponentSources<Props extends Dict = Dict> {
-	DOM: DOMSource
+	DOM: MainDOMSource
 	props: PropsSource<Props>
 }
 

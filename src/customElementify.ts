@@ -5,6 +5,7 @@ export function customElementify<Props extends Dict = Dict>(
 	main: Component,
 	options?: CycleComponentOptions,
 ): typeof Element
+
 export function customElementify<Props extends Dict = Dict>(
 	main: Component,
 	options: Dict = {},
