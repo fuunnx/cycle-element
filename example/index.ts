@@ -13,6 +13,9 @@ window.customElements.define("input-range", InputRange);
 import { Tesseract } from "./Tesseract";
 window.customElements.define("hyper-cube", Tesseract);
 
+import { InputBool } from "./InputBool";
+window.customElements.define("input-bool", InputBool);
+
 const colorInput = document.querySelector('[name="color"]') as any;
 const colorReversedInput = document.querySelector(
   '[name="color_reversed"]'
@@ -57,6 +60,7 @@ knob("rotateZ", 2 * Math.PI);
 knob("rotateW", 2 * Math.PI);
 knob("perspectiveW", 1);
 knob("perspectiveZ", 1);
+toggle("skew");
 
 function knob(name: string, max: number) {
   let aside = document.querySelector("aside");
@@ -65,6 +69,17 @@ function knob(name: string, max: number) {
     knob.label = name;
     knob.max = max;
     knob.value = max / 2;
+    aside.appendChild(knob);
+
+    hypercube[name + "$"] = knob.value$;
+  }
+}
+
+function toggle(name: string) {
+  let aside = document.querySelector("aside");
+  if (aside) {
+    let knob: any = document.createElement("input-bool");
+    knob.label = name;
     aside.appendChild(knob);
 
     hypercube[name + "$"] = knob.value$;

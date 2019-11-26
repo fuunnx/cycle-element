@@ -8,7 +8,7 @@ import { hypercubeState } from "./hypercube";
 import { Point } from "./Shape";
 import { props } from "@skatejs/element/dist/esm";
 
-const WIDTH = 500;
+const WIDTH = 800;
 
 export interface Props {
   rotateX: number;
@@ -17,6 +17,7 @@ export interface Props {
   rotateW: number;
   perspectiveZ: number;
   perspectiveW: number;
+  skew: boolean;
 }
 
 export const Tesseract = customElementify<Props>(
@@ -24,30 +25,34 @@ export const Tesseract = customElementify<Props>(
     const { DOM, props: propsSource } = sources;
 
     return {
-      DOM: xs.of(canvas({ attrs: { width: 800, height: 800 } })),
+      DOM: xs.of(canvas({ attrs: { width: WIDTH, height: WIDTH } })),
       canvas: xs
         .combine(DOM.select("canvas").element(), propsSource.get())
         .map(([element, props]) => {
-          const lines = hypercubeState(props as Props).lines.map(
-            map((point: Point) => {
-              const [x = 1, y = 1] = point;
-              return {
-                x: (x + 0.5) * WIDTH,
-                y: (y + 0.5) * WIDTH
-              };
-            })
-          );
+          const lines = hypercubeState(props as Props).lines.map(line => {
+            const coeff = (line as any)[0][2] + (line as any)[1][2];
+
+            return {
+              type: "lines",
+              width: coeff * 2 <= 2 ? 3 : coeff * 2,
+              color: "black",
+              cap: "round",
+              dashSize: coeff * 2 <= 2 ? 3 : 0,
+              lines: [
+                line.map((point: Point) => {
+                  const [x = 1, y = 1] = point;
+                  return {
+                    x: (x + 0.5) * (WIDTH - 200) + 100,
+                    y: (y + 0.5) * (WIDTH - 200) + 100
+                  };
+                })
+              ]
+            };
+          });
 
           return {
             target: element,
-            content: [
-              {
-                type: "lines",
-                width: 2,
-                color: "black",
-                lines
-              }
-            ]
+            content: lines
           };
         })
     };
@@ -59,7 +64,8 @@ export const Tesseract = customElementify<Props>(
       rotateZ: Number,
       rotateW: Number,
       perspectiveW: { ...props.number, default: () => 0.5 },
-      perspectiveZ: { ...props.number, default: () => 0.5 }
+      perspectiveZ: { ...props.number, default: () => 0.5 },
+      skew: Boolean
     },
 
     drivers: () => ({
