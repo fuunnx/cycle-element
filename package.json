@@ -1,61 +1,61 @@
 {
-  "name": "@fuunnx/cycle-custom-element",
-  "version": "0.0.0",
-  "description": "Embed your cycle.js app anywhere by turning it into a custom element",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "test": "jest --config jestconfig.json",
-    "start": "budo -d example example/index.ts:index.js --live --jsx -- -p tsify",
-    "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json",
-    "prepare": "pnpm run build",
-    "prepublishOnly": "pnpm test && pnpm run lint",
-    "preversion": "pnpm run lint",
-    "version": "pnpm run format && git add -A src",
-    "postversion": "git push && git push --tags",
-    "postinstall": "patch-package"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fuunnx/cycle-custom-element.git"
-  },
-  "files": [
-    "lib/**/*"
-  ],
-  "keywords": [
-    "Hello",
-    "Greeter"
-  ],
-  "author": "Géraud Henrion",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/fuunnx/cycle-custom-element/issues"
-  },
-  "homepage": "https://github.com/fuunnx/cycle-custom-element#readme",
-  "devDependencies": {
-    "@types/jest": "^24.0.17",
-    "@types/ramda": "^0.26.33",
-    "@typescript-eslint/eslint-plugin": "^2.9.0",
-    "@typescript-eslint/parser": "^2.9.0",
-    "budo": "^11.6.3",
-    "eslint": "^6.7.1",
-    "jest": "^24.8.0",
-    "patch-package": "^6.2.0",
-    "prettier": "^1.19.1",
-    "ramda": "^0.26.1",
-    "snabbdom-pragma": "^2.8.0",
-    "ts-jest": "^24.0.2",
-    "tsify": "^4.0.1",
-    "typescript": "^3.7.2"
-  },
-  "dependencies": {
-    "@cycle/dom": "^22.3.0",
-    "@cycle/run": "^5.2.0",
-    "@cycle/time": "^0.20.0",
-    "@skatejs/element": "0.0.1",
-    "snabbdom": "^0.7.3",
-    "xstream": "^11.11.0"
-  }
+	"name": "@fuunnx/cycle-custom-element",
+	"version": "0.0.0",
+	"description": "Embed your cycle.js app anywhere by turning it into a custom element",
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"scripts": {
+		"test": "jest --config jestconfig.json",
+		"start": "budo -d example example/index.ts:index.js --live --jsx -- -p tsify",
+		"build": "tsc",
+		"format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+		"lint": "tslint -p tsconfig.json",
+		"prepare": "pnpm run build",
+		"prepublishOnly": "pnpm test && pnpm run lint",
+		"preversion": "pnpm run lint",
+		"version": "pnpm run format && git add -A src",
+		"postversion": "git push && git push --tags",
+		"postinstall": "patch-package"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/fuunnx/cycle-custom-element.git"
+	},
+	"files": [
+		"lib/**/*"
+	],
+	"keywords": [
+		"Hello",
+		"Greeter"
+	],
+	"author": "Géraud Henrion",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/fuunnx/cycle-custom-element/issues"
+	},
+	"homepage": "https://github.com/fuunnx/cycle-custom-element#readme",
+	"devDependencies": {
+		"@types/jest": "^24.0.17",
+		"@types/ramda": "^0.26.33",
+		"@typescript-eslint/eslint-plugin": "^2.9.0",
+		"@typescript-eslint/parser": "^2.9.0",
+		"budo": "^11.6.3",
+		"eslint": "^6.7.1",
+		"jest": "^24.8.0",
+		"patch-package": "^6.2.0",
+		"prettier": "^1.19.1",
+		"ramda": "^0.26.1",
+		"snabbdom-pragma": "^2.8.0",
+		"ts-jest": "^24.0.2",
+		"tsify": "^4.0.1",
+		"typescript": "^3.7.2"
+	},
+	"dependencies": {
+		"@cycle/dom": "^22.3.0",
+		"@cycle/run": "^5.2.0",
+		"@cycle/time": "^0.20.0",
+		"@skatejs/element": "0.0.1",
+		"snabbdom": "^0.7.3",
+		"xstream": "^11.11.0"
+	}
 }

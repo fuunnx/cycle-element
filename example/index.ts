@@ -1,32 +1,32 @@
-import { HelloWorld } from "./HelloWorld";
-window.customElements.define("hello-world", HelloWorld);
+import { HelloWorld } from './HelloWorld'
+window.customElements.define('hello-world', HelloWorld)
 
-import { InputText } from "./InputText";
-window.customElements.define("input-text", InputText);
+import { InputText } from './InputText'
+window.customElements.define('input-text', InputText)
 
-import { HelloCanvas } from "./HelloCanvas";
-window.customElements.define("hello-canvas", HelloCanvas);
+import { HelloCanvas } from './HelloCanvas'
+window.customElements.define('hello-canvas', HelloCanvas)
 
-import { InputRange } from "./InputRange";
-window.customElements.define("input-range", InputRange);
+import { InputRange } from './InputRange'
+window.customElements.define('input-range', InputRange)
 
-import { Tesseract } from "./Tesseract";
-window.customElements.define("hyper-cube", Tesseract);
+import { Tesseract } from './Tesseract'
+window.customElements.define('hyper-cube', Tesseract)
 
-import { InputBool } from "./InputBool";
-window.customElements.define("input-bool", InputBool);
+import { InputBool } from './InputBool'
+window.customElements.define('input-bool', InputBool)
 
-const colorInput = document.querySelector('[name="color"]') as any;
+const colorInput = document.querySelector('[name="color"]') as any
 const colorReversedInput = document.querySelector(
-  '[name="color_reversed"]'
-) as any;
-const canvasElement = document.querySelector("hello-canvas") as any;
-const hypercube = document.querySelector("hyper-cube") as any;
-const helloElement = document.querySelector("hello-world") as any;
-const xRange = document.querySelector('[name="xRange"]') as any;
-const yRange = document.querySelector('[name="yRange"]') as any;
-const widthRange = document.querySelector('[name="widthRange"]') as any;
-const heightRange = document.querySelector('[name="heightRange"]') as any;
+	'[name="color_reversed"]',
+) as any
+const canvasElement = document.querySelector('hello-canvas') as any
+const hypercube = document.querySelector('hyper-cube') as any
+const helloElement = document.querySelector('hello-world') as any
+const xRange = document.querySelector('[name="xRange"]') as any
+const yRange = document.querySelector('[name="yRange"]') as any
+const widthRange = document.querySelector('[name="widthRange"]') as any
+const heightRange = document.querySelector('[name="heightRange"]') as any
 
 // const color$ = colorInput.value$.map((val: string) => {
 //   if (val === "red") {
@@ -54,34 +54,34 @@ const heightRange = document.querySelector('[name="heightRange"]') as any;
 //   height$: heightRange.value$
 // });
 
-knob("rotateX", 2 * Math.PI);
-knob("rotateY", 2 * Math.PI);
-knob("rotateZ", 2 * Math.PI);
-knob("rotateW", 2 * Math.PI);
-knob("perspectiveW", 1);
-knob("perspectiveZ", 1);
-toggle("skew");
+knob('rotateX', 2 * Math.PI)
+knob('rotateY', 2 * Math.PI)
+knob('rotateZ', 2 * Math.PI)
+knob('rotateW', 2 * Math.PI)
+knob('perspectiveW', 1)
+knob('perspectiveZ', 1)
+toggle('skew')
 
 function knob(name: string, max: number) {
-  let aside = document.querySelector("aside");
-  if (aside) {
-    let knob: any = document.createElement("input-range");
-    knob.label = name;
-    knob.max = max;
-    knob.value = max / 2;
-    aside.appendChild(knob);
+	let aside = document.querySelector('aside')
+	if (aside) {
+		let knob: any = document.createElement('input-range')
+		knob.label = name
+		knob.max = max
+		knob.value = max / 2
+		aside.appendChild(knob)
 
-    hypercube[name + "$"] = knob.value$;
-  }
+		hypercube[name + '$'] = knob.value$
+	}
 }
 
 function toggle(name: string) {
-  let aside = document.querySelector("aside");
-  if (aside) {
-    let knob: any = document.createElement("input-bool");
-    knob.label = name;
-    aside.appendChild(knob);
+	let aside = document.querySelector('aside')
+	if (aside) {
+		let knob: any = document.createElement('input-bool')
+		knob.label = name
+		aside.appendChild(knob)
 
-    hypercube[name + "$"] = knob.value$;
-  }
+		hypercube[name + '$'] = knob.value$
+	}
 }
