@@ -1,3 +1,5 @@
+**This library is a WIP. It's working but it's not published yet. It has not a full documentation yet either**
+
 # Cycle Element -ify
 
 A simple way to package your Cycle.js app and use it anywhere on the web :
