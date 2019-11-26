@@ -9,7 +9,7 @@
 		"start": "budo -d example example/index.ts:index.js --live --jsx -- -p tsify",
 		"build": "tsc",
 		"format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-		"lint": "tslint -p tsconfig.json",
+		"lint": "eslint",
 		"prepare": "pnpm run build",
 		"prepublishOnly": "pnpm test && pnpm run lint",
 		"preversion": "pnpm run lint",
