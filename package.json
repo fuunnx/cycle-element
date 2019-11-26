@@ -1,7 +1,7 @@
 {
-	"name": "@fuunnx/cycle-custom-element",
+	"name": "cycle-element",
 	"version": "0.0.0",
-	"description": "Embed your cycle.js app anywhere by turning it into a custom element",
+	"description": "Embed your cycle.js app anywhere by turning it into a custom (or snabbdom) element",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
 	"scripts": {
