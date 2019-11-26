@@ -9,7 +9,10 @@ module.exports = {
 		project: 'tsconfig.json',
 		sourceType: 'module',
 	},
-	plugins: ['@typescript-eslint/eslint-plugin', '@typescript-eslint/tslint'],
+	plugins: [
+		'@typescript-eslint/eslint-plugin',
+		'@typescript-eslint/eslint-plugin-tslint',
+	],
 	rules: {
 		'@typescript-eslint/adjacent-overload-signatures': 'error',
 		'@typescript-eslint/array-type': 'error',
