@@ -43,9 +43,6 @@ export type Component = (
 ) => ComponentSinks & StreamDict
 
 export interface PropsSource<Props extends Dict = Dict> {
-	get: {
-		(propName: keyof Props): Stream<any>
-		(): Stream<Props>
-	}
-	dispose: () => void
+	stream: Stream<Props>
+	prop: (propName: keyof Props) => Stream<any>
 }

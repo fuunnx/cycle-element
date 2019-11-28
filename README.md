@@ -139,3 +139,5 @@ This library uses skatejs as a foundation
 ## TODO
 
 - Pull request to @cycle/dom allow the use of <root> like in skatejs snabbdom-element : https://github.com/skatejs/skatejs/blob/master/packages/element-snabbdom/src/index.ts
+
+- Remove dependency on @cycle/time on propsDriver

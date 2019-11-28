@@ -1,54 +1,41 @@
 import { timeDriver } from '@cycle/time'
-import xs, { MemoryStream, Stream } from 'xstream'
+import xs, { MemoryStream, Stream, Listener } from 'xstream'
 import dropRepeats from 'xstream/extra/dropRepeats'
 import { _PropsDriver, Dict, PropsSource } from './types'
 
 const Time = timeDriver(xs.empty())
 
-const noopListener = {
-	next(x: unknown) {},
-	error(x: unknown) {},
-	complete(x: unknown) {},
-}
-
 export function makePropsDriver<Props extends Dict = Dict>(
 	elm: HTMLElement,
-	props: Dict,
+	propsList: (keyof Props)[],
 ) {
-	const $element = elm as HTMLElement & Dict
-	const propsNames = Object.keys(props)
-	let propsSourcesListener = noopListener
+	const propsNames = new Set(propsList)
+	const $element = elm as HTMLElement & Props
 
-	const initialProps = getAllProps<Props>(propsNames, $element)
-	const propsSource_$: MemoryStream<Props> = xs.createWithMemory({
-		start(listener) {
-			propsSourcesListener = listener
-			listener.next(getAllProps(propsNames, $element))
-		},
-		stop() {
-			//
-		},
-	})
+	let propsSourcesListener: Listener<Partial<Props>>
 
-	const propsSource$ = propsSource_$.fold(
-		(acc, x) => ({ ...acc, ...x }),
-		initialProps,
-	)
+	const initialProps = getAllProps<Props>(propsList, $element)
+	const props$ = xs
+		.createWithMemory<Partial<Props>>({
+			start(listener) {
+				propsSourcesListener = listener
+				listener.next(getAllProps(propsList, $element))
+			},
+			stop() {
+				//
+			},
+		})
+		.fold((acc, x): Props => ({ ...acc, ...x }), initialProps)
 
 	const propsSource = {
-		get(propName?: keyof Props) {
-			if (!propName) {
-				return propsSource$
-					.startWith(getAllProps(propsNames, $element))
-					.compose(dropRepeats()) as MemoryStream<Props>
-			}
-
-			return propsSource$
+		stream: props$,
+		prop<K extends keyof Props>(propName: K): MemoryStream<Props[K]> {
+			return props$
 				.filter(currProps => propName in currProps)
 				.map(currProps => currProps[propName])
 				.startWith(($element as any)[propName])
 				.compose(dropRepeats())
-				.remember() as MemoryStream<any>
+				.remember()
 		},
 	}
 
@@ -61,7 +48,7 @@ export function makePropsDriver<Props extends Dict = Dict>(
 				return xs
 					.merge(
 						source$.compose(Time.delay(0)), // there is a weird glitch on ordering
-						propsSource.get(key),
+						propsSource.prop(key),
 					)
 					.remember()
 			},
@@ -81,13 +68,13 @@ export function makePropsDriver<Props extends Dict = Dict>(
 		})
 	})
 
-	function propsDriver(
-		propsSink$: Stream<Props> = xs.never(),
-	): PropsSource<Props> {
+	function driver(
+		propsSink$: Stream<Partial<Props>> = xs.never(),
+	): PropsSource<Props> & { dispose: () => void } {
 		const subscription = propsSink$.subscribe({
-			next: (newProps: Props) => {
+			next: (newProps: Partial<Props>) => {
 				Object.entries(newProps).forEach(([key, value]) => {
-					if (key in props) {
+					if (propsNames.has('key')) {
 						$element[key] = value
 					}
 				})
@@ -105,22 +92,24 @@ export function makePropsDriver<Props extends Dict = Dict>(
 		}
 	}
 
-	Object.assign(propsDriver, {
-		next(nextProps: Props) {
-			const newProps = getAllProps(Object.keys(nextProps), elm)
+	return {
+		driver,
+		next(nextProps: Partial<Props>) {
+			const newProps = getAllProps(
+				Object.keys(nextProps) as (keyof Props)[],
+				$element,
+			)
 			propsSourcesListener.next(newProps)
 		},
-	})
-
-	return (propsDriver as unknown) as _PropsDriver<Props>
+	}
 }
 
 function getAllProps<Props extends Dict = Dict>(
-	propsNames: string[],
-	$element: Dict,
-) {
+	propsNames: (keyof Props)[],
+	$element: Props,
+): Props {
 	return propsNames.reduce((acc, propName) => {
-		;(acc as any)[propName] = $element[propName]
+		acc[propName] = $element[propName]
 		return acc
 	}, {} as Props)
 }
