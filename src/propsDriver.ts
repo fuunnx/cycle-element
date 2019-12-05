@@ -73,7 +73,7 @@ export function makePropsDriver<Props extends Dict = Dict>(
 	): PropsSource<Props> & { dispose: () => void } {
 		const subscription = propsSink$.subscribe({
 			next: (newProps: Partial<Props>) => {
-				Object.entries(newProps).forEach(([key, value]) => {
+				Object.entries(newProps).forEach(([key, value]: [keyof Props, any]) => {
 					if (propsNames.has('key')) {
 						$element[key] = value
 					}
