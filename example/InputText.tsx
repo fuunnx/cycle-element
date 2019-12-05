@@ -1,7 +1,7 @@
 import Snabbdom from 'snabbdom-pragma'
 import { customElementify } from '../src'
 
-export const InputText = customElementify(
+export const InputText = customElementify<{ value: string; label: string }>(
 	function CycleComponent(sources) {
 		const { props, DOM } = sources
 
@@ -16,7 +16,7 @@ export const InputText = customElementify(
 		return {
 			focus$,
 			props: props$,
-			DOM: props.get().map(props => {
+			DOM: props.stream.map(props => {
 				const { value, label } = props
 				return (
 					<root>

@@ -21,8 +21,9 @@ export interface CycleComponentOptions {
 
 export type Props = Dict<any>
 
-export interface ComponentSinks {
+export interface ComponentSinks<Props extends Dict = Dict> {
 	DOM?: Stream<any>
+	props?: Stream<Partial<Props>>
 }
 
 export interface ComponentSources<Props extends Dict = Dict> {
@@ -38,9 +39,9 @@ export type _PropsDriver<Props extends Dict = Dict> = PropsDriver<Props> & {
 	next: (x: Props) => void
 }
 
-export type Component = (
-	sources: ComponentSources & Dict,
-) => ComponentSinks & StreamDict
+export type Component<Props extends Dict = Dict> = (
+	sources: ComponentSources<Props> & Dict,
+) => ComponentSinks<Props> & StreamDict
 
 export interface PropsSource<Props extends Dict = Dict> {
 	stream: Stream<Props>

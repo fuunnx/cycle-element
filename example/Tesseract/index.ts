@@ -27,9 +27,9 @@ export const Tesseract = customElementify<Props>(
 		return {
 			DOM: xs.of(canvas({ attrs: { width: WIDTH, height: WIDTH } })),
 			canvas: xs
-				.combine(DOM.select('canvas').element(), propsSource.get())
+				.combine(DOM.select('canvas').element(), propsSource.stream)
 				.map(([element, props]) => {
-					const lines = hypercubeState(props as Props).lines.map(line => {
+					const lines = hypercubeState(props).lines.map(line => {
 						const coeff = (line as any)[0][2] + (line as any)[1][2]
 
 						return {

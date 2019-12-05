@@ -1,5 +1,5 @@
 import Snabbdom from 'snabbdom-pragma'
-import { ComponentSources, customElementify } from '../src'
+import { customElementify } from '../src'
 
 const css = `
 h1 {
@@ -7,12 +7,16 @@ h1 {
 }
 `
 
-export const HelloWorld = customElementify(
-	function CycleComponent(sources: ComponentSources) {
+export interface HelloWorldProps {
+	name: string
+}
+
+export const HelloWorld = customElementify<HelloWorldProps>(
+	function CycleComponent(sources) {
 		const { props } = sources
 
 		return {
-			DOM: props.get('name').map((name: string) => {
+			DOM: props.prop('name').map((name: string) => {
 				return (
 					<root>
 						<style>{css}</style>

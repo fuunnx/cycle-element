@@ -4,18 +4,26 @@ import xs from 'xstream'
 import { customElementify } from '../../src'
 import { makeCanvasDriver } from './canvasDriver'
 
-export const HelloCanvas = customElementify(
+interface HelloCanvasProps {
+	color: string
+	x: number
+	y: number
+	width: number
+	height: number
+}
+
+export const HelloCanvas = customElementify<HelloCanvasProps>(
 	function CycleComponent(sources) {
 		const { DOM, props: propsSource } = sources
 
 		return {
 			DOM: xs.of(canvas()),
 			canvas: xs
-				.combine(DOM.select('canvas').element(), propsSource.get())
+				.combine(DOM.select('canvas').element(), propsSource.stream)
 				.map(([element, properties]) => {
 					const { color, x, y, width, height } = properties
-					const w = element.width
-					const h = element.height
+					const w = (element as any).width
+					const h = (element as any).height
 					return {
 						target: element,
 						content: [

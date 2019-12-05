@@ -21,7 +21,7 @@ export const InputRange = customElementify(
 		return {
 			focus$,
 			props: props$,
-			DOM: propsSource.get().map(({ value, label: labelText, min, max }) => {
+			DOM: propsSource.stream.map(({ value, label: labelText, min, max }) => {
 				return (
 					<root
 						style={{

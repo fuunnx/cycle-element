@@ -2,7 +2,7 @@ import { CycleComponent } from './CycleComponent'
 import { Component, CycleComponentOptions, Dict } from './types'
 
 export function customElementify<Props extends Dict = Dict>(
-	main: Component,
+	main: Component<Props>,
 	options?: CycleComponentOptions,
 ): typeof Element
 
