@@ -1,4 +1,4 @@
-import { Lifecycle, CycleComponentOptions } from './lifecycle'
+import { Lifecycle, CycleComponentOptions } from './Lifecycle'
 import { Component, Dict } from './types'
 import {
 	makeSkateElement,

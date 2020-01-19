@@ -1,7 +1,7 @@
 import { div, VNode } from '@cycle/dom'
-import { Dict, SkatePropTypes } from './types'
+import { Dict } from './types'
 import { HyperScriptHelperFn } from '@cycle/dom/lib/cjs/hyperscript-helpers'
-import { ILifecycle } from './lifecycle'
+import { ILifecycle } from './Lifecycle'
 
 export interface makeSnabbdomElementOptions {
 	wrapperNode?: HyperScriptHelperFn

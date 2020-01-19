@@ -1,6 +1,6 @@
 import Element from '@skatejs/element'
 import { Dict, SkatePropTypes } from './types'
-import { ILifecycle } from './lifecycle'
+import { ILifecycle } from './Lifecycle'
 
 export interface makeSkateElementOptions<Props> {
 	props?: SkatePropTypes<Props>
@@ -15,7 +15,7 @@ export function makeSkateElement<Props extends Dict = Dict>(
 	makeLifeCycle: (elm: HTMLElement) => ILifecycle<Props>,
 	options?: makeSkateElementOptions<Props>,
 ) {
-	const { shadowRootInit, props = {} } = options
+	const { shadowRootInit, props = {} } = options || {}
 
 	return class extends SkateElement<Props> {
 		public static props: SkatePropTypes<Props> = props as SkatePropTypes<Props>
