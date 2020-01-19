@@ -20,7 +20,8 @@ export function makeSnabbdomElement<Props extends Dict = Dict>(
 			hooks: {
 				insert(vnode: VNode) {
 					const elm = vnode.elm as HTMLElement & Dict
-					elm!.lifecycle = makeLifeCycle(elm)
+					elm.lifecycle = makeLifeCycle(elm)
+					elm.lifecycle.update({ ...props, children })
 
 					props?.hooks?.insert?.(vnode)
 				},

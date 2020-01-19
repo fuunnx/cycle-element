@@ -30,6 +30,7 @@ export function makeSkateElement<Props extends Dict = Dict>(
 		public connectedCallback() {
 			super.connectedCallback()
 			this.lifecycle = makeLifeCycle(this)
+			this.lifecycle.update(this as any)
 		}
 
 		public updated(oldProps: Props) {
