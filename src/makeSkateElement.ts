@@ -25,7 +25,7 @@ export function makeSkateElement<Props extends Dict = Dict>(
 				: shadowRootInit === true ? ({ mode: 'open' }) as ShadowRootInit
         : shadowRootInit
 
-		public lifecycle!: ILifecycle<Props>
+		public lifecycle: ILifecycle<Props> = { update() {}, remove() {} }
 
 		public connectedCallback() {
 			super.connectedCallback()
