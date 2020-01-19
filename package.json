@@ -22,7 +22,8 @@
 		"url": "git+https://github.com/fuunnx/cycle-custom-element.git"
 	},
 	"files": [
-		"lib/**/*"
+		"lib/**/*",
+		"src/**/*"
 	],
 	"keywords": [
 		"Hello",
