@@ -1,22 +1,22 @@
 import { timeDriver } from '@cycle/time'
 import xs, { MemoryStream, Stream, Listener } from 'xstream'
 import dropRepeats from 'xstream/extra/dropRepeats'
-import { _PropsDriver, Dict, PropsSource } from './types'
+import { _PropsDriver, Dict, PropsSource, PropsDriver } from './types'
 
 const Time = timeDriver(xs.empty())
 
 export function makePropsDriver<Props extends Dict = Dict>(
 	elm: HTMLElement,
 	propsList: (keyof Props)[],
-) {
+): _PropsDriver<Props> {
 	const propsNames = new Set(propsList)
 	const $element = elm as HTMLElement & Props
 
-	let propsSourcesListener: Listener<Partial<Props>>
+	let propsSourcesListener: Listener<Props>
 
 	const initialProps = getAllProps<Props>(propsList, $element)
 	const props$ = xs
-		.createWithMemory<Partial<Props>>({
+		.createWithMemory<Props>({
 			start(listener) {
 				propsSourcesListener = listener
 				listener.next(getAllProps(propsList, $element))
@@ -25,7 +25,7 @@ export function makePropsDriver<Props extends Dict = Dict>(
 				//
 			},
 		})
-		.fold((acc, x): Props => ({ ...acc, ...x }), initialProps)
+		.fold((acc, x): Props => ({ ...acc, ...x } as Props), initialProps)
 
 	const propsSource = {
 		stream: props$,
@@ -78,6 +78,7 @@ export function makePropsDriver<Props extends Dict = Dict>(
 						$element[key] = value
 					}
 				})
+				propsSourcesListener.next(newProps as any)
 			},
 			error: (error: Error | string) => {
 				throw error
@@ -92,16 +93,15 @@ export function makePropsDriver<Props extends Dict = Dict>(
 		}
 	}
 
-	return {
-		driver,
-		next(nextProps: Partial<Props>) {
-			const newProps = getAllProps(
-				Object.keys(nextProps) as (keyof Props)[],
-				$element,
-			)
-			propsSourcesListener.next(newProps)
-		},
+	driver.next = (nextProps: Partial<Props>) => {
+		const newProps = getAllProps(
+			Object.keys(nextProps) as (keyof Props)[],
+			$element,
+		)
+
+		propsSourcesListener.next(newProps)
 	}
+	return (driver as unknown) as _PropsDriver<Props>
 }
 
 function getAllProps<Props extends Dict = Dict>(

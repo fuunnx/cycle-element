@@ -1,5 +1,6 @@
 import Snabbdom from 'snabbdom-pragma'
 import { customElementify } from '../src'
+import { Stream } from 'xstream'
 
 export interface InputBoolProps {
 	value: boolean

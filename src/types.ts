@@ -1,6 +1,8 @@
 import { MainDOMSource } from '@cycle/dom'
 import { Driver, Drivers } from '@cycle/run'
 import { Stream } from 'xstream'
+import { PropType } from '@skatejs/element/dist/esm/types'
+import { AllKeys, ObjectKeys, StringKeys } from 'simplytyped'
 
 export interface Dict<T = any> {
 	[opt: string]: T
@@ -8,22 +10,20 @@ export interface Dict<T = any> {
 
 export type StreamDict = Dict<Stream<any>>
 
-export interface ComponentOptions {
-	props?: Props
+export interface CycleComponentOptions<Props extends Dict = Dict> {
+	props?: SkatePropTypes<Props>
 	drivers?: (element: HTMLElement) => Drivers
 }
 
-export interface CycleComponentOptions {
-	props?: Props
-	drivers?: (element: HTMLElement) => Drivers
-	shadowRootInit?: ShadowRootInit | boolean
+export type SkatePropTypes<Props extends Dict = Dict> = {
+	[P in keyof Props]: PropType
 }
 
 export type Props = Dict<any>
 
 export interface ComponentSinks<Props extends Dict = Dict> {
 	DOM?: Stream<any>
-	props?: Stream<Partial<Props>>
+	props?: Stream<any>
 }
 
 export interface ComponentSources<Props extends Dict = Dict> {

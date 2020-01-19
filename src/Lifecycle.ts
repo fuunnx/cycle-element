@@ -1,22 +1,28 @@
+import { objectKeys } from 'simplytyped'
 import { Drivers, setup } from '@cycle/run'
 import { Stream, Subscription } from 'xstream'
 import { makePropsDriver } from './propsDriver'
-import { _PropsDriver, Component, Dict, Props } from './types'
+import { _PropsDriver, Component, Dict } from './types'
 import { makeWrappedDOMDriver } from './wrappedDOMDriver'
+
+export interface ILifecycle<Props extends Dict = Dict> {
+	update: (props: Props) => any
+	remove: () => any
+}
 
 export class Lifecycle<Props extends Dict = Dict> {
 	private elm: HTMLElement & Dict
 	private subscriptions: Dict<Subscription> = {}
 	private propsDriver: _PropsDriver<Props>
 
-	constructor(
+	public constructor(
 		elm: HTMLElement,
-		main: Component,
+		main: Component<Props>,
 		makeDrivers: (elm: HTMLElement) => Drivers,
 		props: {},
 	) {
 		this.elm = elm
-		this.propsDriver = makePropsDriver<Props>(elm, props as any)
+		this.propsDriver = makePropsDriver<Props>(elm, objectKeys(props))
 
 		const drivers = {
 			props: this.propsDriver as any,
@@ -35,8 +41,8 @@ export class Lifecycle<Props extends Dict = Dict> {
 				this.elm[key] = value$ as Stream<any>
 			} else {
 				this.subscriptions[key] = (value$ as Stream<any>).subscribe({
-					next: value => {
-						this.elm.dispatchEvent(new CustomEvent(key, { detail: value }))
+					next: detail => {
+						this.elm.dispatchEvent(new CustomEvent(key, { detail }))
 					},
 				})
 			}

@@ -10,7 +10,7 @@ import { props } from '@skatejs/element/dist/esm'
 
 const WIDTH = 800
 
-export interface Props {
+export interface TesseractProps {
 	rotateX: number
 	rotateY: number
 	rotateZ: number
@@ -20,7 +20,7 @@ export interface Props {
 	skew: boolean
 }
 
-export const Tesseract = customElementify<Props>(
+export const Tesseract = customElementify<TesseractProps>(
 	function CycleComponent(sources) {
 		const { DOM, props: propsSource } = sources
 
@@ -29,26 +29,28 @@ export const Tesseract = customElementify<Props>(
 			canvas: xs
 				.combine(DOM.select('canvas').element(), propsSource.stream)
 				.map(([element, props]) => {
-					const lines = hypercubeState(props).lines.map(line => {
-						const coeff = (line as any)[0][2] + (line as any)[1][2]
+					const lines = hypercubeState(props as TesseractProps).lines.map(
+						line => {
+							const coeff = (line as any)[0][2] + (line as any)[1][2]
 
-						return {
-							type: 'lines',
-							width: coeff * 2 <= 2 ? 3 : coeff * 2,
-							color: 'black',
-							cap: 'round',
-							dashSize: coeff * 2 <= 2 ? 3 : 0,
-							lines: [
-								line.map((point: Point) => {
-									const [x = 1, y = 1] = point
-									return {
-										x: (x + 0.5) * (WIDTH - 200) + 100,
-										y: (y + 0.5) * (WIDTH - 200) + 100,
-									}
-								}),
-							],
-						}
-					})
+							return {
+								type: 'lines',
+								width: coeff * 2 <= 2 ? 3 : coeff * 2,
+								color: 'black',
+								cap: 'round',
+								dashSize: coeff * 2 <= 2 ? 3 : 0,
+								lines: [
+									line.map((point: Point) => {
+										const [x = 1, y = 1] = point
+										return {
+											x: (x + 0.5) * (WIDTH - 200) + 100,
+											y: (y + 0.5) * (WIDTH - 200) + 100,
+										}
+									}),
+								],
+							}
+						},
+					)
 
 					return {
 						target: element,

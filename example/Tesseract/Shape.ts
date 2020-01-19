@@ -13,17 +13,18 @@ type Ref = string
 type Line = [Point, Point]
 type LineRefs = [Ref, Ref]
 
-export class Shape {
-	public static of({ points = {}, vertexs = [] }) {
-		return new Shape(points, vertexs)
-	}
+interface IShape {
+	points: Dict<Point>
+	lines: Line[]
+}
 
+export class Shape {
 	public static empty() {
-		return Shape.of({ points: {}, vertexs: [] })
+		return new Shape({}, [])
 	}
 
 	public static point() {
-		return Shape.of({ points: { a: [] }, vertexs: [] })
+		return new Shape({ a: [] }, [])
 	}
 
 	public static dimensionPrimitive(dimensions: number): Shape {

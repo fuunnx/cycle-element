@@ -1,5 +1,5 @@
 import { pipe } from 'ramda'
-import { Props } from './index'
+import { TesseractProps } from './index'
 import {
 	matrixTransform,
 	rotateXMatrix4,
@@ -25,13 +25,13 @@ const hypercube = Shape.hypercube()
 //   )
 // );
 
-export function hypercubeState(props: Props) {
+export function hypercubeState(props: TesseractProps) {
 	const to2dPoint = perspective(props.perspectiveZ, props.perspectiveW)
 
 	return hypercube.map(pipe(rotate(props), to2dPoint, recenter))
 }
 
-function rotate(axis: Props) {
+function rotate(axis: TesseractProps) {
 	return matrixTransform(
 		rotateZMatrix4(PI / 4),
 		// prettier-ignore

@@ -3,7 +3,14 @@ import { Stream } from 'xstream'
 import { customElementify } from '../src'
 import { props } from '@skatejs/element'
 
-export const InputRange = customElementify(
+export interface InputRangeProps {
+	value: number
+	label: string
+	min: number
+	max: number
+}
+
+export const InputRange = customElementify<InputRangeProps>(
 	function CycleComponent(sources) {
 		const { props: propsSource, DOM } = sources
 

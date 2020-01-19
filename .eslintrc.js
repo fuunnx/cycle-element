@@ -3,7 +3,11 @@ module.exports = {
 		browser: true,
 		es6: true,
 	},
-	extends: [],
+	extends: [
+		'plugin:import/errors',
+		'plugin:import/warnings',
+		'plugin:import/typescript',
+	],
 	parser: '@typescript-eslint/parser',
 	parserOptions: {
 		project: 'tsconfig.json',
@@ -84,7 +88,13 @@ module.exports = {
 			'undefined',
 		],
 		'id-match': 'error',
-		'import/order': 'error',
+		'import/order': [
+			'error',
+			{
+				order: 'asc',
+				caseInsensitive: true,
+			},
+		],
 		'linebreak-style': 'off',
 		'max-classes-per-file': ['error', 1],
 		'max-len': 'off',
@@ -123,7 +133,6 @@ module.exports = {
 		'no-var': 'error',
 		'object-shorthand': 'error',
 		'one-var': ['error', 'never'],
-		'prefer-arrow/prefer-arrow-functions': 'error',
 		'prefer-const': [
 			'error',
 			{

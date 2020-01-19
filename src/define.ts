@@ -1,7 +1,6 @@
 import { h } from '@cycle/dom'
-import { CycleComponent } from './CycleComponent'
 
-export function define(name: string, Component: typeof CycleComponent) {
+export function define(name: string, Component: typeof HTMLElement) {
 	window.customElements.define(name, Component)
 
 	return function snabbdomTag(...args: any[]) {

@@ -42,15 +42,17 @@
 		"@typescript-eslint/parser": "^2.9.0",
 		"budo": "^11.6.3",
 		"eslint": "^6.7.1",
+		"eslint-plugin-import": "^2.20.0",
 		"jest": "^24.8.0",
 		"patch-package": "^6.2.0",
 		"prettier": "^1.19.1",
 		"ramda": "^0.26.1",
+		"simplytyped": "^3.2.3",
 		"snabbdom-pragma": "^2.8.0",
 		"ts-jest": "^24.0.2",
 		"tsify": "^4.0.1",
 		"tslint": "^5.20.1",
-		"typescript": "^3.7.2"
+		"typescript": "^3.7.5"
 	},
 	"dependencies": {
 		"@cycle/dom": "^22.3.0",

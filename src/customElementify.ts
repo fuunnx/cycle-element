@@ -1,27 +1,18 @@
-import { CycleComponent } from './CycleComponent'
+import { Lifecycle } from './lifecycle'
 import { Component, CycleComponentOptions, Dict } from './types'
-
-export function customElementify<Props extends Dict = Dict>(
-	main: Component<Props>,
-	options?: CycleComponentOptions,
-): typeof Element
+import {
+	makeSkateElement,
+	makeSkateElementOptions,
+	SkateElement,
+} from './makeSkateElement'
 
 export function customElementify<Props extends Dict = Dict>(
 	main: Component,
-	options: Dict = {},
-) {
-	let { props = {}, shadowRootInit, drivers = () => ({}) } = options
+	options: CycleComponentOptions & makeSkateElementOptions<Props> = {},
+): typeof SkateElement {
+	let { props = {}, drivers = () => ({}) } = options || {}
 
-	if (typeof shadowRootInit !== 'object') {
-		shadowRootInit = shadowRootInit ? { mode: 'open' } : undefined
-	}
-
-	return class extends CycleComponent<Props> {
-		get drivers() {
-			return drivers(this)
-		}
-		public static props = props
-		public static shadowRootOptions = shadowRootInit
-		public static main = main
-	}
+	return makeSkateElement((elm: HTMLElement) => {
+		return new Lifecycle(elm, main, drivers, props || {})
+	}, options)
 }
