@@ -1,5 +1,5 @@
-import { Lifecycle } from './lifecycle'
-import { Component, CycleComponentOptions, Dict } from './types'
+import { Lifecycle, CycleComponentOptions } from './lifecycle'
+import { Component, Dict } from './types'
 import {
 	makeSnabbdomElementOptions,
 	makeSnabbdomElement,
@@ -7,7 +7,7 @@ import {
 
 export function snabbdomElementify<Props extends Dict = Dict>(
 	main: Component<Props>,
-	options: CycleComponentOptions & makeSnabbdomElementOptions<Props> = {},
+	options: CycleComponentOptions & makeSnabbdomElementOptions = {},
 ) {
 	const { props, drivers = () => ({}) } = options
 

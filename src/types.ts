@@ -1,19 +1,13 @@
 import { MainDOMSource } from '@cycle/dom'
-import { Driver, Drivers } from '@cycle/run'
+import { Driver } from '@cycle/run'
 import { Stream } from 'xstream'
 import { PropType } from '@skatejs/element/dist/esm/types'
-import { AllKeys, ObjectKeys, StringKeys } from 'simplytyped'
 
 export interface Dict<T = any> {
 	[opt: string]: T
 }
 
 export type StreamDict = Dict<Stream<any>>
-
-export interface CycleComponentOptions<Props extends Dict = Dict> {
-	props?: SkatePropTypes<Props>
-	drivers?: (element: HTMLElement) => Drivers
-}
 
 export type SkatePropTypes<Props extends Dict = Dict> = {
 	[P in keyof Props]: PropType

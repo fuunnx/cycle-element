@@ -1,5 +1,5 @@
-import { Lifecycle } from './lifecycle'
-import { Component, CycleComponentOptions, Dict } from './types'
+import { Lifecycle, CycleComponentOptions } from './lifecycle'
+import { Component, Dict } from './types'
 import {
 	makeSkateElement,
 	makeSkateElementOptions,

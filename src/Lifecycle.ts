@@ -2,12 +2,17 @@ import { objectKeys } from 'simplytyped'
 import { Drivers, setup } from '@cycle/run'
 import { Stream, Subscription } from 'xstream'
 import { makePropsDriver } from './propsDriver'
-import { _PropsDriver, Component, Dict } from './types'
+import { _PropsDriver, Component, Dict, SkatePropTypes } from './types'
 import { makeWrappedDOMDriver } from './wrappedDOMDriver'
 
 export interface ILifecycle<Props extends Dict = Dict> {
 	update: (props: Props) => any
 	remove: () => any
+}
+
+export interface CycleComponentOptions<Props extends Dict = Dict> {
+	props?: SkatePropTypes<Props>
+	drivers?: (element: HTMLElement) => Drivers
 }
 
 export class Lifecycle<Props extends Dict = Dict> {
