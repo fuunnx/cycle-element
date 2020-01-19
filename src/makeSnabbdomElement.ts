@@ -1,11 +1,11 @@
 import { div, VNode } from '@cycle/dom'
-import { Dict } from './types'
+import { Dict, SkatePropTypes } from './types'
 import { HyperScriptHelperFn } from '@cycle/dom/lib/cjs/hyperscript-helpers'
 import { ILifecycle } from './lifecycle'
 
 export interface makeSnabbdomElementOptions<Props> {
 	wrapperNode?: HyperScriptHelperFn
-	props?: Props
+	props?: SkatePropTypes<Props>
 }
 
 export function makeSnabbdomElement<Props extends Dict = Dict>(
