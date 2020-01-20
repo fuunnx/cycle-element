@@ -16,13 +16,13 @@ export function makeSnabbdomElement<Props extends Dict = Dict>(
 	return function SnabbdomElement(props: Props, children?: VNode[]) {
 		return wrapperNode({
 			...props,
-			hooks: {
+			hook: {
 				insert(vnode: VNode) {
 					const elm = vnode.elm as HTMLElement & Dict
 					elm.lifecycle = makeLifeCycle(elm)
 					elm.lifecycle.update({ ...props, children })
 
-					props?.hooks?.insert?.(vnode)
+					props?.hook?.insert?.(vnode)
 				},
 				update(vnode: VNode) {
 					const elm = vnode.elm as HTMLElement & Dict
@@ -30,7 +30,7 @@ export function makeSnabbdomElement<Props extends Dict = Dict>(
 						elm.lifecycle.update({ ...props, children })
 					}
 
-					props?.hooks?.update?.(vnode)
+					props?.hook?.update?.(vnode)
 				},
 				destroy(vnode: VNode) {
 					const elm = vnode.elm as HTMLElement & Dict
@@ -38,7 +38,7 @@ export function makeSnabbdomElement<Props extends Dict = Dict>(
 						elm.lifecycle.remove()
 					}
 
-					props?.hooks?.destroy?.(vnode)
+					props?.hook?.destroy?.(vnode)
 				},
 			},
 		})
