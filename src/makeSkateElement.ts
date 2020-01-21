@@ -8,7 +8,7 @@ export interface makeSkateElementOptions<Props> {
 }
 
 export class SkateElement<Props> extends Element {
-	lifecycle: ILifecycle<Props>
+	lifecycle: ILifecycle<Props> = { update() {}, remove() {} }
 }
 
 export function makeSkateElement<Props extends Dict = Dict>(
@@ -25,7 +25,7 @@ export function makeSkateElement<Props extends Dict = Dict>(
 				: shadowRootInit === true ? ({ mode: 'open' }) as ShadowRootInit
         : shadowRootInit
 
-		public lifecycle: ILifecycle<Props> = { update() {}, remove() {} }
+		public lifecycle: ILifecycle<Props>
 
 		public connectedCallback() {
 			super.connectedCallback()
