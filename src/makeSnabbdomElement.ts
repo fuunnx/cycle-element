@@ -10,7 +10,7 @@ function isVnode(vnode: any): vnode is VNode {
 }
 
 export interface makeSnabbdomElementOptions {
-	wrapperNode?: string | VNode | Component
+	wrapperNode?: string | VNode | Component | JSX.Element
 }
 
 type AugmentedHTMLElement<Props> = HTMLElement & {
