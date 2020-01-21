@@ -1,4 +1,4 @@
-import { VNode, VNodeData } from '@cycle/dom'
+import { VNode, VNodeData, h } from '@cycle/dom'
 import { Dict } from './types'
 import { Children } from '@cycle/dom/lib/cjs/hyperscript-helpers'
 import { ILifecycle } from './Lifecycle'
@@ -37,34 +37,26 @@ export function makeSnabbdomElement<Props extends Dict = Dict>(
 			  )
 			: createElement(wrapperNode, data || null, children as any)
 
-		vnode.data = vnode.data || {}
-		vnode.data.hook = vnode.data.hook || {}
-		vnode.data.hook.insert = function insert(vnode: VNode) {
+		function insert(vnode: VNode) {
 			const elm = vnode.elm as AugmentedHTMLElement<PropsAndChildren>
 			elm.lifecycle = makeLifeCycle(elm)
 			elm.lifecycle.update({ ...vnode.data?.props, children } as any)
-
-			vnode.data?.hook?.insert?.(vnode)
 		}
 
-		vnode.data.hook.update = function update(oldVnode: VNode, newVnode: VNode) {
+		function update(oldVnode: VNode, newVnode: VNode) {
 			const elm = vnode.elm as AugmentedHTMLElement<PropsAndChildren>
 			if (elm!.lifecycle) {
 				elm.lifecycle.update({ ...vnode.data?.props, children } as any)
 			}
-
-			vnode.data?.hook?.update?.(oldVnode, newVnode)
 		}
 
-		vnode.data.hook.destroy = function destroy(vnode: VNode) {
+		function destroy(vnode: VNode) {
 			const elm = vnode.elm as AugmentedHTMLElement<PropsAndChildren>
 			if (elm!.lifecycle) {
 				elm.lifecycle.remove()
 			}
-
-			vnode.data?.hook?.destroy?.(vnode)
 		}
 
-		return vnode
+		return merge(vnode, h(vnode.sel!, { hook: { insert, update, destroy } })
 	}
 }
