@@ -9,7 +9,7 @@
 		"declaration": true,
 		"outDir": "./lib",
 		"noImplicitAny": true,
-		"strictNullChecks": false,
+		"strictNullChecks": true,
 		"strict": true,
 		"typeRoots": ["declarations.d.ts"]
 	},

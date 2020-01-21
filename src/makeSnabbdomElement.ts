@@ -13,6 +13,10 @@ export interface makeSnabbdomElementOptions {
 	wrapperNode?: string | VNode | Component
 }
 
+type AugmentedHTMLElement<Props> = HTMLElement & {
+	lifecycle: ILifecycle<Props>
+}
+
 export function makeSnabbdomElement<Props extends Dict = Dict>(
 	makeLifeCycle: (elm: HTMLElement) => ILifecycle<Props>,
 	options?: makeSnabbdomElementOptions,
@@ -21,40 +25,44 @@ export function makeSnabbdomElement<Props extends Dict = Dict>(
 
 	return function SnabbdomElement(
 		data: (VNodeData & { props: Partial<Props> } & Partial<Props>) | undefined,
-		children?: (Children | string)[] | string | any,
+		children?: (Children | string)[] | string,
 	) {
+		type PropsAndChildren = Props & {
+			children: (Children | string)[] | string
+		}
 		let vnode = isVnode(wrapperNode)
 			? merge(
 					wrapperNode,
-					createElement(wrapperNode.sel, data, children as any),
+					createElement(wrapperNode.sel!, data || null, children as any),
 			  )
-			: createElement(wrapperNode, data, children as any)
+			: createElement(wrapperNode, data || null, children as any)
 
+		vnode.data = vnode.data || {}
 		vnode.data.hook = vnode.data.hook || {}
 		vnode.data.hook.insert = function insert(vnode: VNode) {
-			const elm = vnode.elm as HTMLElement & Dict
+			const elm = vnode.elm as AugmentedHTMLElement<PropsAndChildren>
 			elm.lifecycle = makeLifeCycle(elm)
-			elm.lifecycle.update({ ...vnode.data.props, children })
+			elm.lifecycle.update({ ...vnode.data?.props, children } as any)
 
-			vnode.data.hook?.insert(vnode)
+			vnode.data?.hook?.insert?.(vnode)
 		}
 
 		vnode.data.hook.update = function update(oldVnode: VNode, newVnode: VNode) {
-			const elm = vnode.elm as HTMLElement & Dict
+			const elm = vnode.elm as AugmentedHTMLElement<PropsAndChildren>
 			if (elm!.lifecycle) {
-				elm.lifecycle.update({ ...vnode.data.props, children })
+				elm.lifecycle.update({ ...vnode.data?.props, children } as any)
 			}
 
-			vnode.data.hook?.update(oldVnode, newVnode)
+			vnode.data?.hook?.update?.(oldVnode, newVnode)
 		}
 
 		vnode.data.hook.destroy = function destroy(vnode: VNode) {
-			const elm = vnode.elm as HTMLElement & Dict
+			const elm = vnode.elm as AugmentedHTMLElement<PropsAndChildren>
 			if (elm!.lifecycle) {
 				elm.lifecycle.remove()
 			}
 
-			vnode.data.hook?.destroy(vnode)
+			vnode.data?.hook?.destroy?.(vnode)
 		}
 
 		return vnode
