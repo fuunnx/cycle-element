@@ -57,6 +57,6 @@ export function makeSnabbdomElement<Props extends Dict = Dict>(
 			}
 		}
 
-		return merge(vnode, h(vnode.sel!, { hook: { insert, update, destroy } })
+		return merge(vnode, h(vnode.sel!, { hook: { insert, update, destroy } }))
 	}
 }
