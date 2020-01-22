@@ -24,7 +24,9 @@ export function makeSnabbdomElement<Props extends Dict = Dict>(
 	const wrapperNode = options?.wrapperNode || 'div'
 
 	return function SnabbdomElement(
-		data: (VNodeData & { props: Partial<Props> } & Partial<Props>) | undefined,
+		data:
+			| (VNodeData & { props?: Partial<Props> & Dict } & Partial<Props> & Dict)
+			| undefined,
 		children?: (Children | string)[] | string,
 	) {
 		type PropsAndChildren = Props & {
