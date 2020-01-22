@@ -45,14 +45,14 @@ export function makeSnabbdomElement<Props extends Dict = Dict>(
 
 		function update(oldVnode: VNode, newVnode: VNode) {
 			const elm = vnode.elm as AugmentedHTMLElement<PropsAndChildren>
-			if (elm!.lifecycle) {
+			if (elm?.lifecycle) {
 				elm.lifecycle.update({ ...vnode.data?.props, children } as any)
 			}
 		}
 
 		function destroy(vnode: VNode) {
 			const elm = vnode.elm as AugmentedHTMLElement<PropsAndChildren>
-			if (elm!.lifecycle) {
+			if (elm?.lifecycle) {
 				elm.lifecycle.remove()
 			}
 		}
