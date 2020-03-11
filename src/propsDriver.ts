@@ -22,7 +22,7 @@ export function makePropsDriver<Props extends Dict = Dict>(
 				listener.next(getAllProps(propsList, $element))
 			},
 			stop() {
-				//
+				// no-op
 			},
 		})
 		.fold((acc, x): Props => ({ ...acc, ...x } as Props), initialProps)
@@ -108,8 +108,11 @@ function getAllProps<Props extends Dict = Dict>(
 	propsNames: (keyof Props)[],
 	$element: Props,
 ): Props {
-	return propsNames.reduce((acc, propName) => {
-		acc[propName] = $element[propName]
-		return acc
-	}, {} as Props)
+	return propsNames.reduce(
+		(acc, propName) => {
+			acc[propName] = $element[propName]
+			return acc
+		},
+		{} as Props,
+	)
 }
